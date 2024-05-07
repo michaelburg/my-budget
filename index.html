@@ -8,7 +8,7 @@
   </head>
   <body>
     <h1 id="headWithDate"></h1>
-    <h1 id="totalbudget">0</h1>
+    <h2 id="totalbudget">0</h2>
     <div id="totalIncomeDiv">
       <p>income</p>
       <p id="totalIncome">0</p>
@@ -16,18 +16,15 @@
     <div id="totalExpensesDiv">
       <p>expenses</p>
       <p id="totalExpenses">0</p>
-      <p id="totalPersant">0%</p>
+      <span id="totalPercent">0%</span>
     </div>
     <div>
       <!-- droplist +/- -->
-      <div>
-        <p>hello</p>
-      </div>
       <select name="action" id="action" onchange="handleSelectChange()">
         <option value="add">+</option>
         <option value="reduce">-</option>
       </select>
-      <input type="text" id="actionDescription" ,placeholder="Description" />
+      <input type="text" id="actionDescription" class="inputField" ,placeholder="Description" />
       <input type="number" placeholder="value" id="actionValue" />
       <button id="submitAction" onclick="submitAction()">submit</button>
     </div>
