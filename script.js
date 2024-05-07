@@ -15,18 +15,10 @@ const months = [
 let action = document.getElementById("action").value;
 let actionDescriptionText = document.getElementById("actionDescription");
 let actionValueText = document.getElementById("actionValue");
-actionDescriptionText.addEventListener('focus', function(){
-  if(action == 'add'){
-    actionDescriptionText.style.border = '2px solid rgb(56, 178, 173)';
-  }
-  else{
-    actionDescriptionText.style.border = '2px solid #F53237';
-  }
-})
 
-actionDescriptionText.addEventListener('blur', function(){
-  actionDescriptionText.style.border = '1px solid grey';
-})
+addEventListenerToTextInput()
+addEventListenerToValueInput()
+
 totalbudget = 0;
 totalincome = 0;
 totalexpense = 0;
@@ -167,4 +159,35 @@ function handleSelectChange() {
   else if (action == "reduce") {
     document.getElementById("submitAction").style.backgroundColor = "red";
   }
+}
+function addEventListenerToTextInput(){
+  actionDescriptionText.addEventListener('focus', function(){
+    if(action == 'add'){
+      actionDescriptionText.style.border = '2px solid rgb(56, 178, 173)';
+    }
+    else{
+      actionDescriptionText.style.border = '2px solid #F53237';
+    }
+  })
+
+  actionDescriptionText.addEventListener('blur', function(){
+    actionDescriptionText.style.border = '1px solid grey';
+  })
+
+  
+}
+
+function addEventListenerToValueInput(){
+  actionValueText.addEventListener('focus', function(){
+    if(action == 'add'){
+      actionValueText.style.border = '2px solid rgb(56, 178, 173)';
+    }
+    else{
+      actionValueText.style.border = '2px solid #F53237';
+    }
+  })
+
+  actionValueText.addEventListener('blur', function(){
+    actionValueText.style.border = '1px solid grey';
+  })
 }
