@@ -1,0 +1,46 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+}
+#breakdown {
+  width: 500px;
+}
+#incomes {
+  display: block;
+}
+#expenses {
+  display: block;
+}
+#submitAction {
+  background-color: green;
+}
+#totalIncomeDiv {
+  background-color: green;
+}
+
+#totalExpensesDiv {
+  background-color: red;
+}
+#incomes {
+  color: green;
+}
+#expenses {
+  color: red;
+}
+#description {
+  color: black;
+}
+#percent {
+  background-color: rgb(255, 135, 135);
+}
+#totalPersant {
+  background-color: rgb(255, 135, 135);
+}

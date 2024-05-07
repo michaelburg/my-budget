@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1 id="headWithDate"></h1>
+    <h1 id="totalbudget">0</h1>
+    <div id="totalIncomeDiv">
+      <p>income</p>
+      <p id="totalIncome">0</p>
+    </div>
+    <div id="totalExpensesDiv">
+      <p>expenses</p>
+      <p id="totalExpenses">0</p>
+      <p id="totalPersant">0%</p>
+    </div>
+    <div>
+      <!-- droplist +/- -->
+      <select name="action" id="action" onchange="handleSelectChange()">
+        <option value="add">+</option>
+        <option value="reduce">-</option>
+      </select>
+      <input type="text" id="actionDescription" ,placeholder="Description" />
+      <input type="number" placeholder="value" id="actionValue" />
+      <button id="submitAction" onclick="submitAction()">submit</button>
+    </div>
+    <div id="breakdown">
+      <div id="incomes">income</div>
+      <div id="expenses">expenses</div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
