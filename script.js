@@ -18,6 +18,7 @@ let actionValueText = document.getElementById("actionValue");
 
 addEventListenerToTextInput();
 addEventListenerToValueInput();
+handleSelectChange()
 
 let totalBudget = 0;
 let totalIncome = 0;
@@ -44,30 +45,7 @@ function submitAction() {
     actionValueText.valueAsNumber = NaN;
 }
 
-// function commitAction(description, value) {
-//     let typeOfTransaction;
-//     value < 0 ? (typeOfTransaction = "expense") : (typeOfTransaction = "income");
-//     value < 0 ? (totalExpense += value) : (totalIncome += value);
-//     totalBudget += value;
-//     let parent = document.getElementById(typeOfTransaction + "s");
-//     let newAction = document.querySelector(`.${typeOfTransaction}Items`)
-//     newAction.id = typeOfTransaction;
-//     newAction.innerHTML = `
-//     <div class = "${typeOfTransaction}Wrapper">
-//     <p class="description">${description}</p>
-//     <div class = "transaction">
-//     <span class="transactionAmount">${value}</span>
-//     ${typeOfTransaction === "expense" ? `<span id="percent"></span>` : ''}
-//     <i class="fas fa-times checkmark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
-//     </div>
-//     </div>
-//     `;
-//     parent.appendChild(newAction);
-//     setHead();
-//     setExpensesPer();
-//     transactions[description] = value;
-//     updateLocalStorage();
-// }
+
 function commitAction(description, value) {
   let typeOfTransaction;
   value < 0 ? (typeOfTransaction = "expense") : (typeOfTransaction = "income");
@@ -188,3 +166,4 @@ function addEventListenerToValueInput() {
 document.addEventListener("keyup", function (event) {
     if (event.key === "Enter") submitAction();
 });
+
