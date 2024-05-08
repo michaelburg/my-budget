@@ -44,3 +44,9 @@ div {
 #totalPersant {
   background-color: rgb(255, 135, 135);
 }
+.inputField{
+  border:1px solid grey
+}
+.inputField:focus{
+  outline: none;
+}

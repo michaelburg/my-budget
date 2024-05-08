@@ -12,6 +12,13 @@ const months = [
   "November",
   "December",
 ];
+let action = document.getElementById("action").value;
+let actionDescriptionText = document.getElementById("actionDescription");
+let actionValueText = document.getElementById("actionValue");
+
+addEventListenerToTextInput()
+addEventListenerToValueInput()
+
 totalbudget = 0;
 totalincome = 0;
 totalexpense = 0;
@@ -36,9 +43,6 @@ document.addEventListener("keyup", function (event) {
   if (event.key === "Enter") submitAction();
 });
 function submitAction() {
-  action = document.getElementById("action").value;
-  actionDescriptionText = document.getElementById("actionDescription");
-  actionValueText = document.getElementById("actionValue");
   actionDescription = actionDescriptionText.value;
   actionValue = actionValueText.valueAsNumber;
   actionValue = Math.round(parseFloat(actionValue) * 100) / 100;
@@ -74,14 +78,14 @@ function add(actionDescription, actionValue) {
 function reduce(actionDescription, actionValue) {
   totalexpense += actionValue;
   totalbudget -= actionValue;
-  persante = parseInt((actionValue * 100) / totalincome) || 0;
+  percent = parseInt((actionValue * 100) / totalincome) || 0;
   parent = document.getElementById("expenses");
   newAction = document.createElement("div");
   newAction.id = "expense";
   newAction.innerHTML = `
   <p id="description">${actionDescription}</p>
   <p id="expense-amount">${actionValue}</p>
-  <p id="percent">${persante}%</p>
+  <p id="percent">${percent}%</p>
   <button id="cancelExpense" onclick="cancelExpense(this)">Cancel</button>
 `;
   parent.appendChild(newAction);
@@ -101,7 +105,7 @@ function setHead() {
   }
   document.getElementById("totalIncome").innerText = totalincome;
   document.getElementById("totalExpenses").innerText = totalexpense;
-  document.getElementById("totalPersant").innerText = `${
+  document.getElementById("totalPercent").innerText = `${
     parseInt((totalexpense * 100) / totalincome) || 0
   }%`;
 }
@@ -111,8 +115,8 @@ function setExpensesPer() {
     description = div.querySelector("#description").innerText;
     expense = div.querySelector("#expense-amount").innerText;
     expensePer = div.querySelector("#percent");
-    persant = parseInt((expense * 100) / totalincome) || 0;
-    expensePer.innerText = `${persant}%`;
+    percent = parseInt((expense * 100) / totalincome) || 0;
+    expensePer.innerText = `${percent}%`;
   });
   // <p id="percent">${parseInt((actionValue * 100) / income)}%</p>
 }
@@ -155,4 +159,35 @@ function handleSelectChange() {
   else if (action == "reduce") {
     document.getElementById("submitAction").style.backgroundColor = "red";
   }
+}
+function addEventListenerToTextInput(){
+  actionDescriptionText.addEventListener('focus', function(){
+    if(action == 'add'){
+      actionDescriptionText.style.border = '2px solid rgb(56, 178, 173)';
+    }
+    else{
+      actionDescriptionText.style.border = '2px solid #F53237';
+    }
+  })
+
+  actionDescriptionText.addEventListener('blur', function(){
+    actionDescriptionText.style.border = '1px solid grey';
+  })
+
+  
+}
+
+function addEventListenerToValueInput(){
+  actionValueText.addEventListener('focus', function(){
+    if(action == 'add'){
+      actionValueText.style.border = '2px solid rgb(56, 178, 173)';
+    }
+    else{
+      actionValueText.style.border = '2px solid #F53237';
+    }
+  })
+
+  actionValueText.addEventListener('blur', function(){
+    actionValueText.style.border = '1px solid grey';
+  })
 }
