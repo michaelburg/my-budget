@@ -1,52 +1,187 @@
-body {
+@import url(reset.css);
+
+:root{
+  --accent-color-green: rgb(56, 178, 173);
+  --accent-color-red : #F53237;
+  --accent-color-red-light : rgb(248, 100, 102);
+  --border-color-light: rgb(211, 211, 211);
+}
+body{
+  font-family: Arial, Helvetica, sans-serif;
+}
+.header{
+  position: relative;
+  background-image: url('img/backImg.jpg');
+  background-size: cover;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  color: white;
 }
-div {
+.header::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 0;
+}
+.header h2,
+.header h1,
+.header .headerBudgetDiv {
+  position: relative;
+  z-index: 1; 
+}
+.incomeText, .expensesText{
+  color: rgba(0, 0, 0, 0.767);
+  text-transform: uppercase;
+  font-size:12px;
+}
+.headerBudgetDiv{
+  width: 320px;
+  margin-bottom: 0.4em;
+  padding: 0.6em;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 200px;
 }
-#breakdown {
-  width: 500px;
+.expensesValues{
+  display: flex;
 }
-#incomes {
-  display: block;
+
+#totalPercent{
+  background-color: var(--accent-color-red-light);
+  padding-block: 0.4em;
+  padding-inline: 0.7em;
+  font-size: 12px;
+  position: relative;
+  top: -1px;
+  border-radius: 2px;
+  max-width: 30px;
+  
 }
-#expenses {
-  display: block;
+#invisiblePercent{
+   padding-block: 0.4em;
+  padding-inline: 0.7em;
+  font-size: 12px;
+  margin-left: 0.2em;
 }
-#submitAction {
-  background-color: green;
+#totalExpenses{
+  margin-right: 0.2em;
 }
+#invisiblePercent{
+  color: var(--accent-color-green);
+}
+.transactionInput{
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-block: 0.5em;
+  gap: 10px;
+}
+
+.inputField{
+  border:1px solid var(--border-color-light);
+  padding: 0.4em;
+  border-radius: 4px;
+}
+.inputField:focus{
+  outline: none;
+  background-color: none;
+}
+
+select {
+  border:1px solid var(--border-color-light);
+  padding-block: 0.6em;
+  border-radius: 4px;
+  background-repeat: no-repeat;
+  background-position: right center;
+  padding-right: 1em;
+}
+#actionValue{
+  width: 100px;
+}
+#actionDescription{
+  width: 400px;
+}
+.checkmark{
+  font-size: 26px;
+  cursor: pointer;
+}
+/* .fa-thin{
+  font-weight: 200 !important;
+} */
+
+
 #totalIncomeDiv {
-  background-color: green;
+  background-color: var(--accent-color-green);
 }
 
 #totalExpensesDiv {
-  background-color: red;
+  background-color: var(--accent-color-red);
 }
 #incomes {
-  color: green;
+  color: var(--accent-color-green)
 }
 #expenses {
-  color: red;
+  color: var(--accent-color-red)
 }
 #description {
   color: black;
 }
 #percent {
-  background-color: rgb(255, 135, 135);
+  background-color: rgb(250, 205, 205);
+  font-weight: bold;
+  padding: 0.5em;
+  border-radius: 2px;
+  font-size: 10px;
+  position: relative;
+  top: -2px;
+  margin-inline: 0.5em;
 }
 #totalPersant {
   background-color: rgb(255, 135, 135);
 }
-.inputField{
-  border:1px solid grey
+#expense-amount{
+  font-weight: bold;
 }
-.inputField:focus{
-  outline: none;
+#breakdown{
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 3em;
+}
+.transactionWrapper{
+  width: 400px;
+}
+.transactionWrapper h3{
+  text-transform: uppercase;
+  padding-bottom: 0.5em;
+}
+.expenseWrapper, .incomeWrapper{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 0.5em;
+}
+.transactionCancel{
+  display: none;
+  font-size: 15px;
+}
+.expenseWrapper:hover .transactionCancel, .incomeWrapper:hover .transactionCancel{
+  display: inline-block;
+
+}
+.incomeItems > div:nth-child(even), .expenseItems > div:nth-child(even){
+  background-color: #f5f5f5;
+}
+.incomeItems > div:first-child, .expenseItems > div:first-child{
+  border-top: 1px solid var(--border-color-light);
+  border-bottom: 1px solid var(--border-color-light);
+}
+.incomeItems > div:not(:first-child), .expenseItems > div:not(first-child){
+  border-bottom: 1px solid var(--border-color-light);
 }

@@ -19,7 +19,7 @@ let actionValueText = document.getElementById("actionValue");
 addEventListenerToTextInput()
 addEventListenerToValueInput()
 
-totalbudget = 0;
+totalBudget = 0;
 totalincome = 0;
 totalexpense = 0;
 data = JSON.parse(window.localStorage.getItem("data")) || {
@@ -29,7 +29,7 @@ data = JSON.parse(window.localStorage.getItem("data")) || {
 loadPage();
 function loadPage() {
   date = new Date();
-  document.getElementById("headWithDate").innerHTML = `Available budjet in ${
+  document.getElementById("headWithDate").innerHTML = `Available budget in ${
     months[date.getMonth()] + " " + date.getFullYear()
   }`;
   for (const key in data.expenses) {
@@ -60,14 +60,17 @@ function submitAction() {
 }
 function add(actionDescription, actionValue) {
   totalincome += actionValue;
-  totalbudget += actionValue;
-  parent = document.getElementById("incomes");
-  newAction = document.createElement("div");
-  newAction.id = "income";
+  totalBudget += actionValue;
+  parent = document.querySelector(".incomeItems");
+  let newAction = document.createElement("div");
   newAction.innerHTML = `
-    <p id="description">${actionDescription}</p>
-    <p id="income-amount">${actionValue}</p>
-    <button id="cancelIncome" onclick="cancelIncome(this)">Cancel</button>
+  <div class = "incomeWrapper">
+  <p id="description">${actionDescription}</p>
+  <div>
+  <span id="income-amount">${actionValue}</span>
+  <i class="fas fa-times checkmark transactionCancel" id="cancelExpense" onclick="cancelIncome(this)"></i>
+  </div>
+  </div>
   `;
   parent.appendChild(newAction);
   data.incomes[actionDescription] = { value: actionValue };
@@ -77,16 +80,19 @@ function add(actionDescription, actionValue) {
 }
 function reduce(actionDescription, actionValue) {
   totalexpense += actionValue;
-  totalbudget -= actionValue;
+  totalBudget -= actionValue;
   percent = parseInt((actionValue * 100) / totalincome) || 0;
-  parent = document.getElementById("expenses");
+  parent = document.querySelector(".expenseItems");
   newAction = document.createElement("div");
-  newAction.id = "expense";
   newAction.innerHTML = `
+  <div class = "expenseWrapper">
   <p id="description">${actionDescription}</p>
-  <p id="expense-amount">${actionValue}</p>
-  <p id="percent">${percent}%</p>
-  <button id="cancelExpense" onclick="cancelExpense(this)">Cancel</button>
+  <div>
+  <span id="expense-amount">${actionValue}</span>
+  <span id="percent">${percent}%</span>
+  <i class="fas fa-times checkmark transactionCancel" id="cancelExpense" onclick="cancelExpense(this)"></i>
+  </div>
+  </div>
 `;
   parent.appendChild(newAction);
   data.expenses[actionDescription] = { value: actionValue };
@@ -95,13 +101,11 @@ function reduce(actionDescription, actionValue) {
   updateLocalStorage();
 }
 function setHead() {
-  budjet = document.getElementById("totalbudget");
-  if (totalbudget >= 0) {
-    budjet.style.color = "green";
-    budjet.innerText = "+" + totalbudget;
+  budget = document.getElementById("totalBudget");
+  if (totalBudget >= 0) {
+    budget.innerText = "+" + totalBudget;
   } else {
-    budjet.style.color = "red";
-    budjet.innerText = totalbudget;
+    budget.innerText = totalBudget;
   }
   document.getElementById("totalIncome").innerText = totalincome;
   document.getElementById("totalExpenses").innerText = totalexpense;
@@ -122,10 +126,10 @@ function setExpensesPer() {
 }
 function cancelIncome(btn) {
   // const incomes = document.getElementById("incomes");
-  div = btn.parentNode;
+  div = btn.closest(".incomeWrapper");
   cancelIncomeDescription = div.querySelector("#description").innerText;
   cancelIncomeAmount = div.querySelector("#income-amount").innerText;
-  totalbudget -= cancelIncomeAmount;
+  totalBudget -= cancelIncomeAmount;
   totalincome -= cancelIncomeAmount;
   setHead();
   setExpensesPer();
@@ -133,21 +137,25 @@ function cancelIncome(btn) {
   updateLocalStorage();
 
   div.remove();
-}
+  if(document.querySelector(".expenseItems").children.length === 0){
+    document.querySelector(".expenseItems").style.border = 'none';
+}}
 function cancelExpense(btn) {
-  div = btn.parentNode;
+  div = btn.closest(".expenseWrapper");
   cancelexpenseDescription = div.querySelector("#description").innerText;
   cancelexpenseAmount = parseFloat(
     div.querySelector("#expense-amount").innerText
   );
-  totalbudget += cancelexpenseAmount;
+  totalBudget += cancelexpenseAmount;
   totalexpense -= cancelexpenseAmount;
   setHead();
   setExpensesPer();
   delete data.expenses[cancelexpenseDescription];
   updateLocalStorage();
   div.remove();
-}
+  if(document.querySelector(".expenseItems").children.length === 0){
+    document.querySelector(".expenseItems").style.border = 'none';
+}}
 function updateLocalStorage() {
   // quizArr = JSON.parse(window.localStorage.getItem("quizArr")) || quizArr;
   localStorage.setItem("data", JSON.stringify(data));
@@ -155,9 +163,9 @@ function updateLocalStorage() {
 function handleSelectChange() {
   action = document.getElementById("action").value;
   if (action == "add")
-    document.getElementById("submitAction").style.backgroundColor = "green";
+    document.getElementById("submitAction").style.color = "rgb(56, 178, 173)";
   else if (action == "reduce") {
-    document.getElementById("submitAction").style.backgroundColor = "red";
+    document.getElementById("submitAction").style.color = "#F53237";
   }
 }
 function addEventListenerToTextInput(){
