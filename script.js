@@ -26,6 +26,7 @@ let totalExpense = 0;
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
 loadPage();
+
 function loadPage() {
   document.getElementById(
     "headWithDate"
@@ -71,12 +72,13 @@ function commitAction(description, value) {
 
 function setHead() {
   let budget = document.getElementById("totalBudget");
+  budget.style.color = totalBudget >= 0 ? "rgb(56, 178, 173)" : "#F53237";
   budget.innerText = numberToPrint(totalBudget);
   document.getElementById("totalIncome").innerText = numberToPrint(totalIncome);
   document.getElementById("totalExpenses").innerText =
     numberToPrint(totalExpense);
   document.getElementById("totalPercent").innerText = `${
-    parseInt((totalExpense * 100) / totalIncome) * -1 || 0
+    parseInt((totalExpense * 100) / totalIncome) || 0
   }%`;
 }
 
@@ -92,13 +94,16 @@ function setExpensesPer() {
 
 function cancel(btn) {
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
+  let cancelAmount;
   let cancelDescription = div.querySelector(".description").innerText;
   if (div === btn.closest(".incomeWrapper")) {
-    totalIncome -= transactions[cancelDescription];
+    cancelAmount = div.querySelector(".transactionAmount").innerText;
+    totalIncome -= cancelAmount;
   } else if (div === btn.closest(".expenseWrapper")) {
-    totalExpense -= transactions[cancelDescription];
+    cancelAmount = div.querySelector(".transactionAmount").innerText;
+    totalExpense -= cancelAmount;
   }
-  totalBudget -= transactions[cancelDescription];
+  totalBudget -= cancelAmount;
   setHead();
   setExpensesPer();
   delete transactions[cancelDescription];
