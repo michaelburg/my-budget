@@ -26,11 +26,10 @@ let totalExpense = 0;
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
 loadPage();
-
 function loadPage() {
   document.getElementById(
     "headWithDate"
-  ).innerText = `Available budget in ${getDateToTitle()}:`
+  ).innerText = `Available budget in ${getDateToTitle()}`;
   for (const key in transactions) {
     commitAction(key, transactions[key]);
   }
@@ -39,7 +38,7 @@ function loadPage() {
 function submitAction() {
   let actionDescription = actionDescriptionText.value;
   let actionValue = actionValueText.valueAsNumber;
-  if (actionDescription === "" || actionValue <= 0 || isNaN(actionValue)|| transactions.hasOwnProperty(actionDescription))
+  if (actionDescription === "" || actionValue <= 0 || isNaN(actionValue))
     return;
   if (action === "reduce") actionValue *= -1;
   commitAction(actionDescription, actionValue);
@@ -58,9 +57,9 @@ function commitAction(description, value) {
   newAction.innerHTML = `
   <p class="description">${description}</p>
   <div class = "transaction">
-  <p class="transactionAmount">${numberToPrint(value)}</p>
-  ${typeOfTransaction === "expense" ? `<p id="percent"></p>` : ""}
-  <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
+  <span class="transactionAmount">${value}</span>
+  ${typeOfTransaction === "expense" ? `<span id="percent"></span>` : ""}
+  <i class="fas fa-times checkmark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
   </div>
   `;
   parent.appendChild(newAction);
@@ -84,10 +83,9 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".description").innerText;
+    let expense = div.querySelector(".transactionAmount").innerText;
     let expensePer = div.querySelector("#percent");
-    let percent =
-      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0
+    let percent = parseInt((expense * 100) / totalIncome) || 0;
     expensePer.innerText = `${percent}%`;
   });
 }
@@ -120,7 +118,7 @@ function getDateToTitle() {
 
 function numberToPrint(number) {
   if (number >= 0)
-    return `+ ` + number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return "+" + number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -142,7 +140,7 @@ function addEventListenerToTextInput() {
     }
   });
   actionDescriptionText.addEventListener("blur", function () {
-    actionDescriptionText.style.border = "1px solid rgb(202, 202, 202)";
+    actionDescriptionText.style.border = "1px solid grey";
   });
 }
 
@@ -156,7 +154,7 @@ function addEventListenerToValueInput() {
   });
 
   actionValueText.addEventListener("blur", function () {
-    actionValueText.style.border = "1px solid rgb(202, 202, 202)";
+    actionValueText.style.border = "1px solid grey";
   });
 }
 
