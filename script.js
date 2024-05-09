@@ -30,7 +30,7 @@ loadPage();
 function loadPage() {
   document.getElementById(
     "headWithDate"
-  ).innerText = `Available budget in ${getDateToTitle()}:`
+  ).innerText = `Available budget in ${getDateToTitle()}:`;
   for (const key in transactions) {
     commitAction(key, transactions[key]);
   }
@@ -39,7 +39,12 @@ function loadPage() {
 function submitAction() {
   let actionDescription = actionDescriptionText.value;
   let actionValue = actionValueText.valueAsNumber;
-  if (actionDescription === "" || actionValue <= 0 || isNaN(actionValue)|| transactions.hasOwnProperty(actionDescription))
+  if (
+    actionDescription === "" ||
+    actionValue <= 0 ||
+    isNaN(actionValue) ||
+    transactions.hasOwnProperty(actionDescription)
+  )
     return;
   if (action === "reduce") actionValue *= -1;
   commitAction(actionDescription, actionValue);
@@ -72,13 +77,12 @@ function commitAction(description, value) {
 
 function setHead() {
   let budget = document.getElementById("totalBudget");
-  budget.style.color = totalBudget >= 0 ? "rgb(56, 178, 173)" : "#F53237";
   budget.innerText = numberToPrint(totalBudget);
   document.getElementById("totalIncome").innerText = numberToPrint(totalIncome);
   document.getElementById("totalExpenses").innerText =
     numberToPrint(totalExpense);
   document.getElementById("totalPercent").innerText = `${
-    parseInt((totalExpense * 100) / totalIncome) || 0
+    parseInt((totalExpense * 100) / totalIncome) * -1 || 0
   }%`;
 }
 
@@ -88,7 +92,7 @@ function setExpensesPer() {
     let expenseDesc = div.querySelector(".description").innerText;
     let expensePer = div.querySelector("#percent");
     let percent =
-      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0
+      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
   });
 }
