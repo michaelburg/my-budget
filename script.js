@@ -1,17 +1,3 @@
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 let action = document.getElementById("action").value;
 let actionDescriptionText = document.getElementById("actionDescription");
 let actionValueText = document.getElementById("actionValue");
@@ -64,9 +50,9 @@ function commitAction(description, value) {
   </div>
   `;
   parent.appendChild(newAction);
+  transactions[description] = value;
   setHead();
   setExpensesPer();
-  transactions[description] = value;
   updateLocalStorage();
 }
 
@@ -115,7 +101,9 @@ function updateLocalStorage() {
 
 function getDateToTitle() {
   let date = new Date();
-  return months[date.getMonth()] + " " + date.getFullYear();
+  return (
+    date.toLocaleString("en-US", { month: "long" }) + " " + date.getFullYear()
+  );
 }
 
 function numberToPrint(number) {
