@@ -51,7 +51,7 @@ function commitAction(description, value) {
   value < 0 ? (typeOfTransaction = "expense") : (typeOfTransaction = "income");
   value < 0 ? (totalExpense += value) : (totalIncome += value);
   totalBudget += value;
-  let parent = document.getElementById(typeOfTransaction + "s");
+  let parent = document.querySelector(`.${typeOfTransaction}Items`);
   let newAction = document.createElement("div");
   newAction.className = typeOfTransaction + "Wrapper";
   newAction.innerHTML = `
