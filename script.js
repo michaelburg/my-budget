@@ -1,30 +1,18 @@
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 let action = document.getElementById("action").value;
 let actionDescriptionText = document.getElementById("actionDescription");
 let actionValueText = document.getElementById("actionValue");
-
-addEventListenerToTextInput();
-addEventListenerToValueInput();
-handleSelectChange();
-
+let redColor = "#F53237";
+let greenColor = "rgb(56, 178, 173)";
+let borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
+
+addEventListenerToTextInput();
+addEventListenerToValueInput();
+handleSelectChange();
 loadPage();
 
 function loadPage() {
@@ -39,40 +27,49 @@ function loadPage() {
 function submitAction() {
   let actionDescription = actionDescriptionText.value;
   let actionValue = actionValueText.valueAsNumber;
-  if (
-    actionDescription === "" ||
-    actionValue <= 0 ||
-    isNaN(actionValue) ||
-    transactions.hasOwnProperty(actionDescription)
-  )
-    return;
+  if (validateInput(actionDescription, actionValue)) return;
   if (action === "reduce") actionValue *= -1;
   commitAction(actionDescription, actionValue);
   actionDescriptionText.value = "";
   actionValueText.valueAsNumber = NaN;
 }
 
-function commitAction(description, value) {
+function validateInput(actionDescription, actionValue) {
+  return (
+    actionDescription === "" ||
+    actionValue <= 0 ||
+    isNaN(actionValue) ||
+    transactions.hasOwnProperty(actionDescription)
+  );
+}
+function commitAction(description, transactionValue) {
   let typeOfTransaction;
-  value < 0 ? (typeOfTransaction = "expense") : (typeOfTransaction = "income");
-  value < 0 ? (totalExpense += value) : (totalIncome += value);
-  totalBudget += value;
+  transactionValue < 0
+    ? (typeOfTransaction = "expense")
+    : (typeOfTransaction = "income");
+  transactionValue < 0
+    ? (totalExpense += transactionValue)
+    : (totalIncome += transactionValue);
+  totalBudget += transactionValue;
+  transactions[description] = transactionValue;
+  createNewAction(typeOfTransaction, description, transactionValue);
+  setHead();
+  setExpensesPer();
+  updateLocalStorage();
+}
+function createNewAction(typeOfTransaction, description, transactionValue) {
   let parent = document.querySelector(`.${typeOfTransaction}Items`);
   let newAction = document.createElement("div");
   newAction.className = typeOfTransaction + "Wrapper";
   newAction.innerHTML = `
   <p class="description">${description}</p>
   <div class = "transaction">
-  <p class="transactionAmount">${numberToPrint(value)}</p>
+  <p class="transactionAmount">${numberToPrint(transactionValue)}</p>
   ${typeOfTransaction === "expense" ? `<p id="percent"></p>` : ""}
   <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
   </div>
   `;
   parent.appendChild(newAction);
-  setHead();
-  setExpensesPer();
-  transactions[description] = value;
-  updateLocalStorage();
 }
 
 function setHead() {
@@ -102,13 +99,11 @@ function cancel(btn) {
   let cancelAmount;
   let cancelDescription = div.querySelector(".description").innerText;
   if (div === btn.closest(".incomeWrapper")) {
-    cancelAmount = div.querySelector(".transactionAmount").innerText;
-    totalIncome -= cancelAmount;
+    totalIncome -= transactions[cancelDescription];
   } else if (div === btn.closest(".expenseWrapper")) {
-    cancelAmount = div.querySelector(".transactionAmount").innerText;
-    totalExpense -= cancelAmount;
+    totalExpense -= transactions[cancelDescription];
   }
-  totalBudget -= cancelAmount;
+  totalBudget -= transactions[cancelDescription];
   setHead();
   setExpensesPer();
   delete transactions[cancelDescription];
@@ -123,48 +118,41 @@ function updateLocalStorage() {
 
 function getDateToTitle() {
   let date = new Date();
-  return months[date.getMonth()] + " " + date.getFullYear();
+  return (
+    date.toLocaleString("en-US", { month: "long" }) + " " + date.getFullYear()
+  );
 }
 
 function numberToPrint(number) {
-  if (number >= 0)
-    return `+ ` + number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const fixNum = number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (number >= 0) return "+ " + fixNum;
+  return fixNum;
 }
-
-function handleSelectChange() {
+function changeBorderColor() {
   action = document.getElementById("action").value;
-  if (action === "add")
-    document.getElementById("submitAction").style.color = "rgb(56, 178, 173)";
-  else if (action === "reduce") {
-    document.getElementById("submitAction").style.color = "#F53237";
-  }
+  if (action == "reduce") return redColor;
+  return greenColor;
+}
+function handleSelectChange() {
+  document.getElementById("submitAction").style.color = changeBorderColor();
 }
 
 function addEventListenerToTextInput() {
   actionDescriptionText.addEventListener("focus", function () {
-    if (action === "add") {
-      actionDescriptionText.style.border = "2px solid rgb(56, 178, 173)";
-    } else {
-      actionDescriptionText.style.border = "2px solid #F53237";
-    }
+    actionDescriptionText.style.border = "2px solid " + changeBorderColor();
   });
   actionDescriptionText.addEventListener("blur", function () {
-    actionDescriptionText.style.border = "1px solid rgb(202, 202, 202)";
+    actionDescriptionText.style.border = "1px solid " + borderColor;
   });
 }
 
 function addEventListenerToValueInput() {
   actionValueText.addEventListener("focus", function () {
-    if (action === "add") {
-      actionValueText.style.border = "2px solid rgb(56, 178, 173)";
-    } else {
-      actionValueText.style.border = "2px solid #F53237";
-    }
+    actionValueText.style.border = "2px solid " + changeBorderColor();
   });
 
   actionValueText.addEventListener("blur", function () {
-    actionValueText.style.border = "1px solid rgb(202, 202, 202)";
+    actionValueText.style.border = "1px solid " + borderColor;
   });
 }
 
