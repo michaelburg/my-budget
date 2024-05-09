@@ -31,7 +31,7 @@ function submitAction() {
   if (action === "reduce") actionValue *= -1;
   commitAction(actionDescription, actionValue);
   actionDescriptionText.value = "";
-  actionValueText.valueAsNumber = NaN;
+  actionValueText.value = '';
 }
 
 function validateInput(actionDescription, actionValue) {
@@ -44,12 +44,13 @@ function validateInput(actionDescription, actionValue) {
 }
 function commitAction(description, transactionValue) {
   let typeOfTransaction;
-  transactionValue < 0
-    ? (typeOfTransaction = "expense")
-    : (typeOfTransaction = "income");
-  transactionValue < 0
-    ? (totalExpense += transactionValue)
-    : (totalIncome += transactionValue);
+  if (transactionValue < 0) {
+    typeOfTransaction = "expense";
+    totalExpense += transactionValue;
+  } else {
+    typeOfTransaction = "income";
+    totalIncome += transactionValue;
+  }
   totalBudget += transactionValue;
   transactions[description] = transactionValue;
   createNewAction(typeOfTransaction, description, transactionValue);
