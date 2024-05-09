@@ -1,3 +1,17 @@
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 let action = document.getElementById("action").value;
 let actionDescriptionText = document.getElementById("actionDescription");
 let actionValueText = document.getElementById("actionValue");
@@ -11,13 +25,6 @@ let totalIncome = 0;
 let totalExpense = 0;
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
-transactions = {
-  Groceries: -97.42,
-  Holiday: -1700,
-  "Sold car": 1500,
-  "Website project": 2500,
-  rent: -900,
-};
 loadPage();
 function loadPage() {
   document.getElementById(
@@ -31,12 +38,7 @@ function loadPage() {
 function submitAction() {
   let actionDescription = actionDescriptionText.value;
   let actionValue = actionValueText.valueAsNumber;
-  if (
-    actionDescription === "" ||
-    actionValue <= 0 ||
-    isNaN(actionValue) ||
-    transactions.hasOwnProperty(actionDescription)
-  )
+  if (actionDescription === "" || actionValue <= 0 || isNaN(actionValue))
     return;
   if (action === "reduce") actionValue *= -1;
   commitAction(actionDescription, actionValue);
@@ -55,7 +57,7 @@ function commitAction(description, value) {
   newAction.innerHTML = `
   <p class="description">${description}</p>
   <div class = "transaction">
-  <span class="transactionAmount">${numberToPrint(value)}</span>
+  <span class="transactionAmount">${value}</span>
   ${typeOfTransaction === "expense" ? `<span id="percent"></span>` : ""}
   <i class="fas fa-times checkmark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
   </div>
@@ -81,10 +83,9 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".description").innerText;
+    let expense = div.querySelector(".transactionAmount").innerText;
     let expensePer = div.querySelector("#percent");
-    let percent =
-      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
+    let percent = parseInt((expense * 100) / totalIncome) || 0;
     expensePer.innerText = `${percent}%`;
   });
 }
@@ -111,20 +112,6 @@ function updateLocalStorage() {
 }
 
 function getDateToTitle() {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
   let date = new Date();
   return months[date.getMonth()] + " " + date.getFullYear();
 }
