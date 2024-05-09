@@ -3,22 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
     <title>Document</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1 id="headWithDate"></h1>
-    <h2 id="totalbudget">0</h2>
-    <div id="totalIncomeDiv">
-      <p>income</p>
-      <p id="totalIncome">0</p>
+    <div class="header">
+      <p>fjanfoeamkefwam</p>
+      <h2 id="headWithDate"></h2>
+      <h1 id="totalBudget">0</h1>
+      <div id="totalIncomeDiv" class="headerBudgetDiv">
+        <span class="incomeText">income</span>
+        <div>
+          <span id="totalIncome">0</span>
+          <span id="invisiblePercent">10%</span>
+        </div>
+      </div>
+      <div id="totalExpensesDiv" class="headerBudgetDiv">
+        <span class="expensesText">expenses</span>
+        <div class="expensesValues">
+          <div>
+            <span id="totalExpenses">0</span>
+            <span id="totalPercent"> --- </span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="totalExpensesDiv">
-      <p>expenses</p>
-      <p id="totalExpenses">0</p>
-      <span id="totalPercent">0%</span>
-    </div>
-    <div>
+    <div class="transactionInput">
       <!-- droplist +/- -->
       <select name="action" id="action" onchange="handleSelectChange()">
         <option value="add">+</option>
@@ -36,11 +50,22 @@
         id="actionValue"
         class="inputField"
       />
-      <button id="submitAction" onclick="submitAction()">submit</button>
+      <i
+        class="far fa-check-circle checkmark"
+        id="submitAction"
+        onclick="submitAction()"
+      ></i>
     </div>
     <div id="breakdown">
-      <div id="incomes">income</div>
-      <div id="expenses">expenses</div>
+      <div id="incomes" class="transactionWrapper">
+        <h3>income</h3>
+        <div class="incomeItems"></div>
+      </div>
+
+      <div id="expenses" class="transactionWrapper">
+        <h3>expenses</h3>
+        <div class="expenseItems"></div>
+      </div>
     </div>
     <script src="./script.js"></script>
   </body>
