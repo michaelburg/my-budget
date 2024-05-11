@@ -1,73 +1,68 @@
-const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-let action = document.getElementById("action").value;
-let actionDescriptionText = document.getElementById("actionDescription");
-let actionValueText = document.getElementById("actionValue");
-
-addEventListenerToTextInput();
-addEventListenerToValueInput();
-handleSelectChange();
-
+let actionElement = document.getElementById("action");
+let descriptionElement = document.getElementById("actionDescription");
+let valueElement = document.getElementById("actionValue");
+let redColor = "#F53237";
+let greenColor = "rgb(56, 178, 173)";
+let borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
+
+addEventListenerToTextInput();
+addEventListenerToValueInput();
+handleSelectChange();
 loadPage();
 
 function loadPage() {
+  let action;
   document.getElementById(
     "headWithDate"
-  ).innerText = `Available budget in ${getDateToTitle()}:`
+  ).innerText = `Available budget in ${getDateToTitle()}:`;
   for (const key in transactions) {
-    commitAction(key, transactions[key]);
+    transactions[key] < 0 ? (action = "expense") : (action = "income");
+    commitAction(action, key, transactions[key]);
   }
 }
 
 function submitAction() {
-  let actionDescription = actionDescriptionText.value;
-  let actionValue = actionValueText.valueAsNumber;
-  if (actionDescription === "" || actionValue <= 0 || isNaN(actionValue)|| transactions.hasOwnProperty(actionDescription))
-    return;
-  if (action === "reduce") actionValue *= -1;
-  commitAction(actionDescription, actionValue);
-  actionDescriptionText.value = "";
-  actionValueText.valueAsNumber = NaN;
+  let action = actionElement.value;
+  let description = descriptionElement.value;
+  let actionValue = valueElement.valueAsNumber;
+  if (validateInput(description, actionValue)) return;
+  if (action === "expense") actionValue *= -1;
+  commitAction(action, description, actionValue);
+  descriptionElement.value = "";
+  valueElement.value = "";
 }
 
-function commitAction(description, value) {
-  let typeOfTransaction;
-  value < 0 ? (typeOfTransaction = "expense") : (typeOfTransaction = "income");
-  value < 0 ? (totalExpense += value) : (totalIncome += value);
-  totalBudget += value;
-  let parent = document.querySelector(`.${typeOfTransaction}Items`);
+function commitAction(action, description, actionValue) {
+  actionValue < 0
+    ? (totalExpense += actionValue)
+    : (totalIncome += actionValue);
+  totalBudget += actionValue;
+  transactions[description] = actionValue;
+  createNewAction(action, description, actionValue);
+  setHead();
+  setExpensesPer();
+  updateLocalStorage();
+}
+function createNewAction(action, description, actionValue) {
+  let parent = document.querySelector(`.${action}Items`);
   let newAction = document.createElement("div");
-  newAction.className = typeOfTransaction + "Wrapper";
+  newAction.className = action + "Wrapper";
   newAction.innerHTML = `
-  <p class="description">${description}</p>
+  <p class=actionDescription>${description}</p>
   <div class = "transaction">
-  <p class="transactionAmount">${numberToPrint(value)}</p>
-  ${typeOfTransaction === "expense" ? `<p id="percent"></p>` : ""}
+  <p class="transactionAmount">${numberToPrint(actionValue)}</p>
+  ${action === "expense" ? `<p id="percent"></p>` : ""}
   <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
   </div>
   `;
+  console.log(parent);
+  console.log(newAction);
   parent.appendChild(newAction);
-  setHead();
-  setExpensesPer();
-  transactions[description] = value;
-  updateLocalStorage();
 }
 
 function setHead() {
@@ -84,28 +79,26 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".description").innerText;
+    let expenseDesc = div.querySelector(".actionDescription").innerText;
     let expensePer = div.querySelector("#percent");
     let percent =
-      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0
+      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
   });
 }
 
 function cancel(btn) {
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  let cancelDescription = div.querySelector(".description").innerText;
-  if (div === btn.closest(".incomeWrapper")) {
+  let cancelDescription = div.querySelector(".actionDescription").innerText;
+  if (div === btn.closest(".incomeWrapper"))
     totalIncome -= transactions[cancelDescription];
-  } else if (div === btn.closest(".expenseWrapper")) {
+  else if (div === btn.closest(".expenseWrapper"))
     totalExpense -= transactions[cancelDescription];
-  }
   totalBudget -= transactions[cancelDescription];
+  delete transactions[cancelDescription];
   setHead();
   setExpensesPer();
-  delete transactions[cancelDescription];
   updateLocalStorage();
-
   div.remove();
 }
 
@@ -114,49 +107,53 @@ function updateLocalStorage() {
 }
 
 function getDateToTitle() {
-  let date = new Date();
-  return months[date.getMonth()] + " " + date.getFullYear();
+  const date = new Date();
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const year = date.getFullYear();
+  return month + " " + year;
 }
-
+function validateInput(description, actionValue) {
+  return (
+    description === "" ||
+    isNaN(actionValue) ||
+    actionValue <= 0 ||
+    transactions.hasOwnProperty(description)
+  );
+}
 function numberToPrint(number) {
-  if (number >= 0)
-    return `+ ` + number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-function handleSelectChange() {
-  action = document.getElementById("action").value;
-  if (action === "add")
-    document.getElementById("submitAction").style.color = "rgb(56, 178, 173)";
-  else if (action === "reduce") {
-    document.getElementById("submitAction").style.color = "#F53237";
+  let sign = "+";
+  if (number < 0) {
+    sign = "-";
+    number = number * -1;
   }
+  const fixNum = number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${sign} ${fixNum}`;
+}
+function changeBorderColor() {
+  const action = document.getElementById("action").value;
+  if (action == "expense") return redColor;
+  return greenColor;
+}
+function handleSelectChange() {
+  document.getElementById("submitAction").style.color = changeBorderColor();
 }
 
 function addEventListenerToTextInput() {
-  actionDescriptionText.addEventListener("focus", function () {
-    if (action === "add") {
-      actionDescriptionText.style.border = "2px solid rgb(56, 178, 173)";
-    } else {
-      actionDescriptionText.style.border = "2px solid #F53237";
-    }
+  descriptionElement.addEventListener("focus", function () {
+    descriptionElement.style.border = "2px solid " + changeBorderColor();
   });
-  actionDescriptionText.addEventListener("blur", function () {
-    actionDescriptionText.style.border = "1px solid rgb(202, 202, 202)";
+  descriptionElement.addEventListener("blur", function () {
+    descriptionElement.style.border = "1px solid " + borderColor;
   });
 }
 
 function addEventListenerToValueInput() {
-  actionValueText.addEventListener("focus", function () {
-    if (action === "add") {
-      actionValueText.style.border = "2px solid rgb(56, 178, 173)";
-    } else {
-      actionValueText.style.border = "2px solid #F53237";
-    }
+  valueElement.addEventListener("focus", function () {
+    valueElement.style.border = "2px solid " + changeBorderColor();
   });
 
-  actionValueText.addEventListener("blur", function () {
-    actionValueText.style.border = "1px solid rgb(202, 202, 202)";
+  valueElement.addEventListener("blur", function () {
+    valueElement.style.border = "1px solid " + borderColor;
   });
 }
 
