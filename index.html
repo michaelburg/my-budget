@@ -34,21 +34,23 @@
     <div class="transactionInput">
       <!-- droplist +/- -->
       <select name="action" id="action" onchange="handleSelectChange()">
-        <option value="add">+</option>
-        <option value="reduce">-</option>
+        <option value="income">+</option>
+        <option value="expense">-</option>
       </select>
-      <input
-        type="text"
-        id="actionDescription"
-        class="inputField"
-        placeholder="Add description"
-      />
-      <input
-        type="number"
-        placeholder="value"
-        id="actionValue"
-        class="inputField"
-      />
+      <div class="inputWrapper">
+        <input
+          type="text"
+          id="actionDescription"
+          class="inputField"
+          placeholder="Add description"
+        />
+        <input
+          type="number"
+          placeholder="value"
+          id="actionValue"
+          class="inputField"
+        />
+      </div>
       <i
         class="far fa-check-circle checkmark"
         id="submitAction"

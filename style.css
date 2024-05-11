@@ -79,7 +79,12 @@ body{
   border-bottom: 1px solid var(--border-color-light);
   gap: 10px;
 }
-
+.inputWrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
 .inputField{
   border:1px solid var(--border-color-light);
   padding-block: 0.5em;
@@ -134,7 +139,7 @@ select {
   font-weight: 400;
   min-width: 35px;
   text-align: center;
-  padding: 0.5em;
+  padding: 0.1em;
   border-radius: 2px;
   font-size: 10px;
   display: inline-block;
@@ -169,6 +174,7 @@ select {
   padding-block: 0.75em;
   padding-inline: 0.5em;
 }
+
 .transactionCancel{
   font-size: 20px;
   transition: all 0.3s ease;
@@ -206,3 +212,63 @@ select {
 .incomeItems > div:not(:first-child), .expenseItems > div:not(first-child){
   border-bottom: 1px solid var(--border-color-light);
 }
+@media (max-width: 850px){
+  #breakdown{
+    margin-inline: 2em;
+  }
+}
+@media (max-width: 650px){
+  .transactionInput{
+    gap: 20px;
+    max-width: 650px;
+  }
+  .inputWrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .inputField{
+    width: 150px !important;
+  }
+  .checkmark{
+    font-size: 40px;
+  }
+  select{
+    padding-block: 0.8em;
+  }
+}
+@media (max-width: 470px){
+  #breakdown{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .incomeWrapper, .expenseWrapper{
+    max-width: 300px;
+    width: 250px;
+    margin-inline: auto;
+    padding-block: 0.9em;
+  }
+  .transactionWrapper{
+    width: 300px;
+  }
+  .transactionWrapper h3{
+    text-align: center;
+  }
+  .expenseItems{
+    margin-bottom: 1em;
+  }
+}
+@media (max-width: 380px) {
+  #totalBudget{
+    font-size: 40px;
+  }
+  #headWithDate{
+    font-size: 16px;
+  }
+  .headerBudgetDiv{
+    width: 250px;
+  }
+} 

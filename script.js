@@ -1,6 +1,6 @@
-let action = document.getElementById("action").value;
-let actionDescriptionText = document.getElementById("actionDescription");
-let actionValueText = document.getElementById("actionValue");
+let actionElement = document.getElementById("action");
+let descriptionElement = document.getElementById("actionDescription");
+let valueElement = document.getElementById("actionValue");
 let redColor = "#F53237";
 let greenColor = "rgb(56, 178, 173)";
 let borderColor = "rgb(202, 202, 202)";
@@ -16,60 +16,52 @@ handleSelectChange();
 loadPage();
 
 function loadPage() {
+  let action;
   document.getElementById(
     "headWithDate"
   ).innerText = `Available budget in ${getDateToTitle()}:`;
   for (const key in transactions) {
-    commitAction(key, transactions[key]);
+    transactions[key] < 0 ? (action = "expense") : (action = "income");
+    commitAction(action, key, transactions[key]);
   }
 }
 
 function submitAction() {
-  let actionDescription = actionDescriptionText.value;
-  let actionValue = actionValueText.valueAsNumber;
-  if (validateInput(actionDescription, actionValue)) return;
-  if (action === "reduce") actionValue *= -1;
-  commitAction(actionDescription, actionValue);
-  actionDescriptionText.value = "";
-  actionValueText.value = '';
+  let action = actionElement.value;
+  let description = descriptionElement.value;
+  let actionValue = valueElement.valueAsNumber;
+  if (validateInput(description, actionValue)) return;
+  if (action === "expense") actionValue *= -1;
+  commitAction(action, description, actionValue);
+  descriptionElement.value = "";
+  valueElement.value = "";
 }
 
-function validateInput(actionDescription, actionValue) {
-  return (
-    actionDescription === "" ||
-    actionValue <= 0 ||
-    isNaN(actionValue) ||
-    transactions.hasOwnProperty(actionDescription)
-  );
-}
-function commitAction(description, transactionValue) {
-  let typeOfTransaction;
-  if (transactionValue < 0) {
-    typeOfTransaction = "expense";
-    totalExpense += transactionValue;
-  } else {
-    typeOfTransaction = "income";
-    totalIncome += transactionValue;
-  }
-  totalBudget += transactionValue;
-  transactions[description] = transactionValue;
-  createNewAction(typeOfTransaction, description, transactionValue);
+function commitAction(action, description, actionValue) {
+  actionValue < 0
+    ? (totalExpense += actionValue)
+    : (totalIncome += actionValue);
+  totalBudget += actionValue;
+  transactions[description] = actionValue;
+  createNewAction(action, description, actionValue);
   setHead();
   setExpensesPer();
   updateLocalStorage();
 }
-function createNewAction(typeOfTransaction, description, transactionValue) {
-  let parent = document.querySelector(`.${typeOfTransaction}Items`);
+function createNewAction(action, description, actionValue) {
+  let parent = document.querySelector(`.${action}Items`);
   let newAction = document.createElement("div");
-  newAction.className = typeOfTransaction + "Wrapper";
+  newAction.className = action + "Wrapper";
   newAction.innerHTML = `
-  <p class="description">${description}</p>
+  <p class=actionDescription>${description}</p>
   <div class = "transaction">
-  <p class="transactionAmount">${numberToPrint(transactionValue)}</p>
-  ${typeOfTransaction === "expense" ? `<p id="percent"></p>` : ""}
+  <p class="transactionAmount">${numberToPrint(actionValue)}</p>
+  ${action === "expense" ? `<p id="percent"></p>` : ""}
   <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
   </div>
   `;
+  console.log(parent);
+  console.log(newAction);
   parent.appendChild(newAction);
 }
 
@@ -87,7 +79,7 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".description").innerText;
+    let expenseDesc = div.querySelector(".actionDescription").innerText;
     let expensePer = div.querySelector("#percent");
     let percent =
       parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
@@ -97,19 +89,16 @@ function setExpensesPer() {
 
 function cancel(btn) {
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  let cancelAmount;
-  let cancelDescription = div.querySelector(".description").innerText;
-  if (div === btn.closest(".incomeWrapper")) {
+  let cancelDescription = div.querySelector(".actionDescription").innerText;
+  if (div === btn.closest(".incomeWrapper"))
     totalIncome -= transactions[cancelDescription];
-  } else if (div === btn.closest(".expenseWrapper")) {
+  else if (div === btn.closest(".expenseWrapper"))
     totalExpense -= transactions[cancelDescription];
-  }
   totalBudget -= transactions[cancelDescription];
+  delete transactions[cancelDescription];
   setHead();
   setExpensesPer();
-  delete transactions[cancelDescription];
   updateLocalStorage();
-
   div.remove();
 }
 
@@ -118,20 +107,31 @@ function updateLocalStorage() {
 }
 
 function getDateToTitle() {
-  let date = new Date();
+  const date = new Date();
+  const month = date.toLocaleString("en-US", { month: "long" });
+  const year = date.getFullYear();
+  return month + " " + year;
+}
+function validateInput(description, actionValue) {
   return (
-    date.toLocaleString("en-US", { month: "long" }) + " " + date.getFullYear()
+    description === "" ||
+    isNaN(actionValue) ||
+    actionValue <= 0 ||
+    transactions.hasOwnProperty(description)
   );
 }
-
 function numberToPrint(number) {
+  let sign = "+";
+  if (number < 0) {
+    sign = "-";
+    number = number * -1;
+  }
   const fixNum = number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  if (number >= 0) return "+ " + fixNum;
-  return fixNum;
+  return `${sign} ${fixNum}`;
 }
 function changeBorderColor() {
-  action = document.getElementById("action").value;
-  if (action == "reduce") return redColor;
+  const action = document.getElementById("action").value;
+  if (action == "expense") return redColor;
   return greenColor;
 }
 function handleSelectChange() {
@@ -139,21 +139,21 @@ function handleSelectChange() {
 }
 
 function addEventListenerToTextInput() {
-  actionDescriptionText.addEventListener("focus", function () {
-    actionDescriptionText.style.border = "2px solid " + changeBorderColor();
+  descriptionElement.addEventListener("focus", function () {
+    descriptionElement.style.border = "2px solid " + changeBorderColor();
   });
-  actionDescriptionText.addEventListener("blur", function () {
-    actionDescriptionText.style.border = "1px solid " + borderColor;
+  descriptionElement.addEventListener("blur", function () {
+    descriptionElement.style.border = "1px solid " + borderColor;
   });
 }
 
 function addEventListenerToValueInput() {
-  actionValueText.addEventListener("focus", function () {
-    actionValueText.style.border = "2px solid " + changeBorderColor();
+  valueElement.addEventListener("focus", function () {
+    valueElement.style.border = "2px solid " + changeBorderColor();
   });
 
-  actionValueText.addEventListener("blur", function () {
-    actionValueText.style.border = "1px solid " + borderColor;
+  valueElement.addEventListener("blur", function () {
+    valueElement.style.border = "1px solid " + borderColor;
   });
 }
 
