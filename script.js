@@ -79,10 +79,9 @@ function createNewAction(action, description, actionValue, time) {
   <p class=actionName>${description}</p>
   <div class = "transaction">
   <p class="transactionAmount">${numberToPrint(actionValue)}</p>
-  ${action === "expense" ? `<p id="percent"></p>` : ""}
+  ${action === "expense" ? `<p class="percent"></p>` : ""}
   <p class="timeStamp">${time}</p>
-  <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this,${time})"></i>
-  <i class= "${cancelClass}" onclick="cancel(this)"></i>
+  <i class="${cancelClass}" onclick="cancel(this,${time})"></i>
   </div>
   `;
   parent.appendChild(newAction);
@@ -106,7 +105,7 @@ function setExpensesPer() {
     const foundTransaction = transactions.find(
       (transaction) => transaction.timeStamp === timeStamp
     );
-    let expensePer = div.querySelector("#percent");
+    let expensePer = div.querySelector(".percent");
     let percent =
       parseInt((foundTransaction["value"] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
