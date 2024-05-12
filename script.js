@@ -7,15 +7,22 @@ let borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
-let isDarkMode = false;
+let docBody = document.querySelector('body')
+let isDarkMode =JSON.parse(localStorage.getItem('darkModeActive')) || false
+if(isDarkMode){
+  colorBody()
+}
+let borderSize = toggleBorderSize();
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
+  changeDarkModeButtons();
 addEventListenerToTextInput();
 addEventListenerToValueInput();
 addEventListenerToAction();
 handleSelectChange();
 loadPage();
 updateDarkModeIcon();
+
 function loadPage() {
   let action;
   document.getElementById(
@@ -51,6 +58,7 @@ function commitAction(action, description, actionValue) {
 }
 
 function createNewAction(action, description, actionValue) {
+  let cancelClass = isDarkMode ? "fa-solid fa-circle-xmark transactionCancel" : "fa-regular fa-circle-xmark xMark transactionCancel";
   let parent = document.querySelector(`.${action}Items`);
   let newAction = document.createElement("div");
   newAction.className = action + "Wrapper";
@@ -59,7 +67,7 @@ function createNewAction(action, description, actionValue) {
   <div class = "transaction">
   <p class="transactionAmount">${numberToPrint(actionValue)}</p>
   ${action === "expense" ? `<p class="percent"></p>` : ""}
-  <i class="fa-regular fa-circle-xmark xMark transactionCancel" onclick="cancel(this)"></i>
+  <i class= "${cancelClass}" onclick="cancel(this)"></i>
   </div>
   `;
   parent.appendChild(newAction);
@@ -140,26 +148,27 @@ function handleSelectChange() {
 
 function addEventListenerToTextInput() {
   descriptionElement.addEventListener("focus", function () {
-    descriptionElement.style.border = "2px solid " + changeBorderColor();
+    descriptionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
   });
   descriptionElement.addEventListener("blur", function () {
-    descriptionElement.style.border = "1px solid " + borderColor;
+    descriptionElement.style.border = `1px solid ${borderColor}`;
   });
 }
 
 function addEventListenerToValueInput() {
   valueElement.addEventListener("focus", function () {
-    valueElement.style.border = "2px solid " + changeBorderColor();
+    valueElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
   });
 
   valueElement.addEventListener("blur", function () {
-    valueElement.style.border = "1px solid " + borderColor;
+    valueElement.style.border = `1px solid ${borderColor}`;
   });
 }
 
+
 function addEventListenerToAction(){
   actionElement.addEventListener('click', function(){
-    actionElement.style.border = '2px solid ' + changeBorderColor();
+    actionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
   });
   actionElement.addEventListener("blur", function () {
     actionElement.style.border = "1px solid " + borderColor;
@@ -173,10 +182,47 @@ document.addEventListener("keyup", function (event) {
 function toggleDarkMode(){
   isDarkMode = isDarkMode === false ? true : false;
   updateDarkModeIcon();
-  console.log(isDarkMode);
+  colorBody();
+  changeDarkModeButtons();
+  handleSelectChange();
+  borderSize = toggleBorderSize();
+  localStorage.setItem('darkModeActive', isDarkMode)
+  location.reload();
+  
+  
+}
+function colorBody(){
+  if(isDarkMode){
+    docBody.classList.add('darkMode')
+  }
+  else{
+    docBody.classList.remove('darkMode')
+  }
 }
 
 function updateDarkModeIcon() {
   const darkModeToggler = document.querySelector('.darkModeToggler');
-  darkModeToggler.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  darkModeToggler.innerHTML = isDarkMode ? '<i class="fas fa-sun darkModeButton"></i>' : '<i class="fas fa-moon darkModeButton"></i>';
+}
+
+function changeDarkModeButtons(){
+  let checkDiv = document.querySelector('.checkmarkSwitch')
+  if(isDarkMode){
+    checkDiv.innerHTML = `<i
+    class="fas fa-circle-check checkmark"
+    id="submitAction"
+    onclick="submitAction()"
+  ></i>`
+  }
+  else{
+    checkDiv.innerHTML = `<i
+    class="far fa-check-circle checkmark"
+    id="submitAction"
+    onclick="submitAction()"
+  ></i>`
+  }
+}
+
+function toggleBorderSize(){
+  return isDarkMode ? '3px' : '2px';
 }
