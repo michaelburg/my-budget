@@ -1,5 +1,4 @@
 let actionElement = document.getElementById("action");
-
 let descriptionElement = document.getElementById("actionDescription");
 let valueElement = document.getElementById("actionValue");
 let redColor = "#F53237";
@@ -29,54 +28,60 @@ function loadPage() {
   document.getElementById(
     "headWithDate"
   ).innerText = `Available budget in ${getDateToTitle()}:`;
-  for (const key in transactions) {
-    commitAction(key, transactions[key]);
-  }
+  transactions.forEach((transaction) => {
+    transaction["value"] < 0 ? (action = "expense") : (action = "income");
+    commitAction(
+      action,
+      transaction["description"],
+      transaction["value"],
+      transaction["timeStamp"]
+    );
+  });
 }
 
 function submitAction() {
-  let actionDescription = actionDescriptionText.value;
-  let actionValue = actionValueText.valueAsNumber;
-  if (validateInput(actionDescription, actionValue)) return;
-  if (action === "reduce") actionValue *= -1;
-  commitAction(actionDescription, actionValue);
-  actionDescriptionText.value = "";
-  actionValueText.valueAsNumber = NaN;
+  let action = actionElement.value;
+  let description = descriptionElement.value;
+  let actionValue = valueElement.valueAsNumber;
+  if (validateInput(description, actionValue)) return;
+  if (action === "expense") actionValue *= -1;
+  time = new Date().getTime();
+  transactions.push({
+    description: description,
+    value: actionValue,
+    timeStamp: time,
+  });
+  commitAction(action, description, actionValue, time);
+  descriptionElement.value = "";
+  valueElement.value = "";
 }
 
-function validateInput(actionDescription, actionValue) {
-  return (
-    actionDescription === "" ||
-    actionValue <= 0 ||
-    isNaN(actionValue) ||
-    transactions.hasOwnProperty(actionDescription)
-  );
-}
-function commitAction(description, transactionValue) {
-  let typeOfTransaction;
-  transactionValue < 0
-    ? (typeOfTransaction = "expense")
-    : (typeOfTransaction = "income");
-  transactionValue < 0
-    ? (totalExpense += transactionValue)
-    : (totalIncome += transactionValue);
-  totalBudget += transactionValue;
-  transactions[description] = transactionValue;
-  createNewAction(typeOfTransaction, description, transactionValue);
+function commitAction(action, description, actionValue, time) {
+  actionValue < 0
+    ? (totalExpense += actionValue)
+    : (totalIncome += actionValue);
+  totalBudget += actionValue;
+  createNewAction(action, description, actionValue, time);
   setHead();
   setExpensesPer();
   updateLocalStorage();
 }
-function createNewAction(typeOfTransaction, description, transactionValue) {
-  let parent = document.querySelector(`.${typeOfTransaction}Items`);
+function createNewAction(action, description, actionValue, time) {
+  let cancelClass = isDarkMode
+    ? "fa-solid fa-circle-xmark transactionCancel"
+    : "fa-regular fa-circle-xmark xMark transactionCancel";
+
+  let parent = document.querySelector(`.${action}Items`);
   let newAction = document.createElement("div");
-  newAction.className = typeOfTransaction + "Wrapper";
+  newAction.className = action + "Wrapper";
+  newAction.id = time;
   newAction.innerHTML = `
-  <p class="description">${description}</p>
+  <p class=actionName>${description}</p>
   <div class = "transaction">
-  <p class="transactionAmount">${numberToPrint(transactionValue)}</p>
-  ${typeOfTransaction === "expense" ? `<p id="percent"></p>` : ""}
-  <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
+  <p class="transactionAmount">${numberToPrint(actionValue)}</p>
+  ${action === "expense" ? `<p class="percent"></p>` : ""}
+  <p class="timeStamp">${time}</p>
+  <i class="${cancelClass}" onclick="cancel(this,${time})"></i>
   </div>
   `;
   parent.appendChild(newAction);
@@ -96,8 +101,11 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".description").innerText;
-    let expensePer = div.querySelector("#percent");
+    let timeStamp = parseInt(div.querySelector(".timeStamp").innerText);
+    const foundTransaction = transactions.find(
+      (transaction) => transaction.timeStamp === timeStamp
+    );
+    let expensePer = div.querySelector(".percent");
     let percent =
       parseInt((foundTransaction["value"] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
@@ -109,19 +117,18 @@ function cancel(btn, timeStamp) {
     (transaction) => transaction.timeStamp === timeStamp
   );
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  let cancelAmount;
-  let cancelDescription = div.querySelector(".description").innerText;
-  if (div === btn.closest(".incomeWrapper")) {
-    totalIncome -= transactions[cancelDescription];
-  } else if (div === btn.closest(".expenseWrapper")) {
-    totalExpense -= transactions[cancelDescription];
-  }
-  totalBudget -= transactions[cancelDescription];
+  if (div === btn.closest(".incomeWrapper"))
+    totalIncome -= foundTransaction["value"];
+  else if (div === btn.closest(".expenseWrapper"))
+    totalExpense -= foundTransaction["value"];
+  totalBudget -= foundTransaction["value"];
+  transactions = transactions.filter(
+    (transaction) => transaction.timeStamp !== timeStamp
+  );
+  div.remove();
   setHead();
   setExpensesPer();
   updateLocalStorage();
-
-  div.remove();
 }
 
 function updateLocalStorage() {
@@ -152,8 +159,8 @@ function numberToPrint(number) {
   return `${sign} ${fixNum}`;
 }
 function changeBorderColor() {
-  action = document.getElementById("action").value;
-  if (action == "reduce") return redColor;
+  const action = document.getElementById("action").value;
+  if (action == "expense") return redColor;
   return greenColor;
 }
 function handleSelectChange() {
@@ -161,21 +168,30 @@ function handleSelectChange() {
 }
 
 function addEventListenerToTextInput() {
-  actionDescriptionText.addEventListener("focus", function () {
-    actionDescriptionText.style.border = "2px solid " + changeBorderColor();
+  descriptionElement.addEventListener("focus", function () {
+    descriptionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
   });
-  actionDescriptionText.addEventListener("blur", function () {
-    actionDescriptionText.style.border = "1px solid " + borderColor;
+  descriptionElement.addEventListener("blur", function () {
+    descriptionElement.style.border = `1px solid ${borderColor}`;
   });
 }
 
 function addEventListenerToValueInput() {
-  actionValueText.addEventListener("focus", function () {
-    actionValueText.style.border = "2px solid " + changeBorderColor();
+  valueElement.addEventListener("focus", function () {
+    valueElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
   });
 
-  actionValueText.addEventListener("blur", function () {
-    actionValueText.style.border = "1px solid " + borderColor;
+  valueElement.addEventListener("blur", function () {
+    valueElement.style.border = `1px solid ${borderColor}`;
+  });
+}
+
+function addEventListenerToAction() {
+  actionElement.addEventListener("click", function () {
+    actionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
+  });
+  actionElement.addEventListener("blur", function () {
+    actionElement.style.border = "1px solid " + borderColor;
   });
 }
 
