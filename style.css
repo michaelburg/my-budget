@@ -104,6 +104,9 @@ select {
   background-position: right center;
   padding-right: 1em;
 }
+select:focus{
+  outline: none;
+}
 #actionValue{
   width: 100px;
 }
@@ -131,10 +134,13 @@ select {
 #expenses {
   color: var(--accent-color-red)
 }
+.actionName{
+  max-width: 75px;
+}
 #description {
   color: black;
 }
-#percent {
+.percent {
   background-color: rgb(250, 205, 205);
   font-weight: 400;
   min-width: 35px;
@@ -197,7 +203,7 @@ select {
 
 }
 .expenseWrapper:hover .transactionAmount,
-.expenseWrapper:hover #percent,
+.expenseWrapper:hover .percent,
 .incomeWrapper:hover .transactionAmount {
   transform: translateX(-10px);
 }
@@ -272,3 +278,9 @@ select {
     width: 250px;
   }
 } 
+
+.darkModeToggler{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}

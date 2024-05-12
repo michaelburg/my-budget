@@ -7,14 +7,15 @@ let borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
+let isDarkMode = false;
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || {};
-
 addEventListenerToTextInput();
 addEventListenerToValueInput();
+addEventListenerToAction();
 handleSelectChange();
 loadPage();
-
+updateDarkModeIcon();
 function loadPage() {
   let action;
   document.getElementById(
@@ -48,20 +49,19 @@ function commitAction(action, description, actionValue) {
   setExpensesPer();
   updateLocalStorage();
 }
+
 function createNewAction(action, description, actionValue) {
   let parent = document.querySelector(`.${action}Items`);
   let newAction = document.createElement("div");
   newAction.className = action + "Wrapper";
   newAction.innerHTML = `
-  <p class=actionDescription>${description}</p>
+  <p class=actionName>${description}</p>
   <div class = "transaction">
   <p class="transactionAmount">${numberToPrint(actionValue)}</p>
-  ${action === "expense" ? `<p id="percent"></p>` : ""}
-  <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
+  ${action === "expense" ? `<p class="percent"></p>` : ""}
+  <i class="fa-regular fa-circle-xmark xMark transactionCancel" onclick="cancel(this)"></i>
   </div>
   `;
-  console.log(parent);
-  console.log(newAction);
   parent.appendChild(newAction);
 }
 
@@ -79,8 +79,8 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".actionDescription").innerText;
-    let expensePer = div.querySelector("#percent");
+    let expenseDesc = div.querySelector(".actionName").innerText;
+    let expensePer = div.querySelector(".percent");
     let percent =
       parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
@@ -89,7 +89,7 @@ function setExpensesPer() {
 
 function cancel(btn) {
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  let cancelDescription = div.querySelector(".actionDescription").innerText;
+  let cancelDescription = div.querySelector(".actionName").innerText;
   if (div === btn.closest(".incomeWrapper"))
     totalIncome -= transactions[cancelDescription];
   else if (div === btn.closest(".expenseWrapper"))
@@ -157,6 +157,26 @@ function addEventListenerToValueInput() {
   });
 }
 
+function addEventListenerToAction(){
+  actionElement.addEventListener('click', function(){
+    actionElement.style.border = '2px solid rgb(56, 178, 173)'
+  });
+  actionElement.addEventListener("blur", function () {
+    actionElement.style.border = "1px solid " + borderColor;
+  });
+}
+
 document.addEventListener("keyup", function (event) {
   if (event.key === "Enter") submitAction();
 });
+
+function toggleDarkMode(){
+  isDarkMode = isDarkMode === false ? true : false;
+  updateDarkModeIcon();
+  console.log(isDarkMode);
+}
+
+function updateDarkModeIcon() {
+  const darkModeToggler = document.querySelector('.darkModeToggler');
+  darkModeToggler.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+}
