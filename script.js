@@ -8,8 +8,7 @@ let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
 let transactions =
-  JSON.parse(window.localStorage.getItem("transactions")) || {};
-
+  JSON.parse(window.localStorage.getItem("transactions")) || [];
 addEventListenerToTextInput();
 addEventListenerToValueInput();
 handleSelectChange();
@@ -20,10 +19,15 @@ function loadPage() {
   document.getElementById(
     "headWithDate"
   ).innerText = `Available budget in ${getDateToTitle()}:`;
-  for (const key in transactions) {
-    transactions[key] < 0 ? (action = "expense") : (action = "income");
-    commitAction(action, key, transactions[key]);
-  }
+  transactions.forEach((transaction) => {
+    transaction["value"] < 0 ? (action = "expense") : (action = "income");
+    commitAction(
+      action,
+      transaction["description"],
+      transaction["value"],
+      transaction["timeStamp"]
+    );
+  });
 }
 
 function submitAction() {
@@ -32,36 +36,41 @@ function submitAction() {
   let actionValue = valueElement.valueAsNumber;
   if (validateInput(description, actionValue)) return;
   if (action === "expense") actionValue *= -1;
-  commitAction(action, description, actionValue);
+  time = new Date().getTime();
+  transactions.push({
+    description: description,
+    value: actionValue,
+    timeStamp: time,
+  });
+  commitAction(action, description, actionValue, time);
   descriptionElement.value = "";
   valueElement.value = "";
 }
 
-function commitAction(action, description, actionValue) {
+function commitAction(action, description, actionValue, time) {
   actionValue < 0
     ? (totalExpense += actionValue)
     : (totalIncome += actionValue);
   totalBudget += actionValue;
-  transactions[description] = actionValue;
-  createNewAction(action, description, actionValue);
+  createNewAction(action, description, actionValue, time);
   setHead();
   setExpensesPer();
   updateLocalStorage();
 }
-function createNewAction(action, description, actionValue) {
+function createNewAction(action, description, actionValue, time) {
   let parent = document.querySelector(`.${action}Items`);
   let newAction = document.createElement("div");
   newAction.className = action + "Wrapper";
+  newAction.id = time;
   newAction.innerHTML = `
   <p class=actionDescription>${description}</p>
   <div class = "transaction">
   <p class="transactionAmount">${numberToPrint(actionValue)}</p>
   ${action === "expense" ? `<p id="percent"></p>` : ""}
-  <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
+  <p class="timeStamp">${time}</p>
+  <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this,${time})"></i>
   </div>
   `;
-  console.log(parent);
-  console.log(newAction);
   parent.appendChild(newAction);
 }
 
@@ -79,27 +88,34 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".actionDescription").innerText;
+    let timeStamp = parseInt(div.querySelector(".timeStamp").innerText);
+    const foundTransaction = transactions.find(
+      (transaction) => transaction.timeStamp === timeStamp
+    );
     let expensePer = div.querySelector("#percent");
     let percent =
-      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
+      parseInt((foundTransaction["value"] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
   });
 }
 
-function cancel(btn) {
+function cancel(btn, timeStamp) {
+  const foundTransaction = transactions.find(
+    (transaction) => transaction.timeStamp === timeStamp
+  );
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  let cancelDescription = div.querySelector(".actionDescription").innerText;
   if (div === btn.closest(".incomeWrapper"))
-    totalIncome -= transactions[cancelDescription];
+    totalIncome -= foundTransaction["value"];
   else if (div === btn.closest(".expenseWrapper"))
-    totalExpense -= transactions[cancelDescription];
-  totalBudget -= transactions[cancelDescription];
-  delete transactions[cancelDescription];
+    totalExpense -= foundTransaction["value"];
+  totalBudget -= foundTransaction["value"];
+  transactions = transactions.filter(
+    (transaction) => transaction.timeStamp !== timeStamp
+  );
+  div.remove();
   setHead();
   setExpensesPer();
   updateLocalStorage();
-  div.remove();
 }
 
 function updateLocalStorage() {
