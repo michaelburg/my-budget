@@ -1,42 +1,44 @@
 @import url(reset.css);
 
-:root{
+:root {
   --accent-color-green: rgb(56, 178, 173);
-  --accent-color-red : #F53237;
-  --accent-color-red-light : rgb(248, 100, 102);
+  --accent-color-red: #f53237;
+  --accent-color-red-light: rgb(248, 100, 102);
   --border-color-light: rgb(202, 202, 202);
 }
-body{
-  font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-weight: lighter;
 }
-.header{
+.header {
   position: relative;
-  background-image: url('img/backImg.jpg');
-  background-size:cover;
+  background-image: url("img/backImg.jpg");
+  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: center;
   color: white;
 }
-#headWithDate{
+#headWithDate {
   font-size: 18px;
   font-weight: 100;
   margin-top: 0.25em;
 }
-#totalBudget{
+#totalBudget {
   margin-bottom: 0.4em;
   font-weight: lighter;
   letter-spacing: 2px;
   font-size: 50px;
 }
-.incomeText, .expensesText{
+.incomeText,
+.expensesText {
   color: rgba(0, 0, 0, 0.767);
   text-transform: uppercase;
-  font-size:12px;
+  font-size: 12px;
   font-weight: 400;
 }
-.headerBudgetDiv{
+.headerBudgetDiv {
   width: 320px;
   margin-bottom: 0.6em;
   padding: 0.6em;
@@ -44,11 +46,11 @@ body{
   justify-content: space-between;
   align-items: center;
 }
-.expensesValues{
+.expensesValues {
   display: flex;
 }
 
-#totalPercent{
+#totalPercent {
   display: inline-block;
   background-color: var(--accent-color-red-light);
   padding-block: 0.3em;
@@ -59,18 +61,17 @@ body{
   top: -1px;
   border-radius: 2px;
   text-align: center;
-  
 }
-#invisiblePercent{
+#invisiblePercent {
   display: inline-block;
   color: var(--accent-color-green);
   min-width: 35px;
-   padding-block: 0.3em;
+  padding-block: 0.3em;
   padding-inline: 0.6em;
   font-size: 12px;
 }
 
-.transactionInput{
+.transactionInput {
   background-color: #f5f5f5;
   display: flex;
   justify-content: center;
@@ -78,34 +79,43 @@ body{
   padding-block: 0.75em;
   border-bottom: 1px solid var(--border-color-light);
   gap: 10px;
+  height: 75px;
 }
-
-.inputField{
-  border:1px solid var(--border-color-light);
+.inputWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.inputField {
+  border: 1px solid var(--border-color-light);
   padding-block: 0.5em;
   border-radius: 4px;
   padding-inline: 0.7em;
 }
-.inputField:focus{
+.inputField:focus {
   outline: none;
   background-color: none;
 }
 
 select {
-  border:1px solid var(--border-color-light);
+  border: 1px solid var(--border-color-light);
   padding-block: 0.6em;
   font-weight: bold;
   background-repeat: no-repeat;
   background-position: right center;
   padding-right: 1em;
 }
-#actionValue{
+select:focus {
+  outline: none;
+}
+#actionValue {
   width: 100px;
 }
-#actionDescription{
+#actionDescription {
   width: 400px;
 }
-.checkmark{
+.checkmark {
   font-size: 30px;
   cursor: pointer;
   margin-left: 0.4em;
@@ -114,96 +124,223 @@ select {
 #totalIncomeDiv {
   background-color: var(--accent-color-green);
 }
-#totalIncome, #totalExpenses, #totalPercent{
+#totalIncome,
+#totalExpenses,
+#totalPercent {
   font-weight: 400;
 }
 #totalExpensesDiv {
   background-color: var(--accent-color-red);
 }
 #incomes {
-  color: var(--accent-color-green)
+  color: var(--accent-color-green);
 }
 #expenses {
-  color: var(--accent-color-red)
+  color: var(--accent-color-red);
+}
+.actionName {
+  max-width: 75px;
+}
+.actionName {
+  max-width: 75px;
 }
 #description {
   color: black;
 }
-#percent {
+.percent {
   background-color: rgb(250, 205, 205);
   font-weight: 400;
   min-width: 35px;
   text-align: center;
-  padding: 0.5em;
+  padding: 0.1em;
   border-radius: 2px;
   font-size: 10px;
   display: inline-block;
   position: relative;
   top: -2px;
   margin-inline: 0.5em;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 #totalPersant {
   background-color: rgb(255, 135, 135);
 }
-#expense-amount{
+#expense-amount {
   font-weight: bold;
 }
-#breakdown{
+#breakdown {
   display: flex;
   justify-content: center;
   gap: 50px;
   margin-top: 3em;
 }
-.transactionWrapper{
+.transactionWrapper {
   width: 400px;
 }
-.transactionWrapper h3{
+.transactionWrapper h3 {
   text-transform: uppercase;
   padding-bottom: 0.5em;
 }
-.expenseWrapper, .incomeWrapper{
+.expenseWrapper,
+.incomeWrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-block: 0.75em;
   padding-inline: 0.5em;
 }
-.transactionCancel{
+
+.transactionCancel {
   font-size: 20px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   cursor: pointer;
   opacity: 0;
   display: none;
 }
-.transactionAmount{
+.transactionAmount {
   transition: all 0.3s;
   display: inline-block;
   font-weight: 400;
 }
-.description{
+.description {
   color: rgb(84, 78, 78);
   font-weight: 400;
 }
-.expenseWrapper:hover .transactionCancel, .incomeWrapper:hover .transactionCancel{
+.expenseWrapper:hover .transactionCancel,
+.incomeWrapper:hover .transactionCancel {
   display: inline-block;
   opacity: 1;
-
 }
 .expenseWrapper:hover .transactionAmount,
-.expenseWrapper:hover #percent,
-.incomeWrapper:hover .transactionAmount,
-.incomeWrapper:hover #percent {
+.expenseWrapper:hover .percent,
+.incomeWrapper:hover .transactionAmount {
   transform: translateX(-10px);
 }
 
-.incomeItems > div:nth-child(even), .expenseItems > div:nth-child(even){
+.incomeItems > div:nth-child(even),
+.expenseItems > div:nth-child(even) {
   background-color: #f5f5f5;
 }
-.incomeItems > div:first-child, .expenseItems > div:first-child{
+.incomeItems > div:first-child,
+.expenseItems > div:first-child {
   border-top: 1px solid var(--border-color-light);
   border-bottom: 1px solid var(--border-color-light);
 }
-.incomeItems > div:not(:first-child), .expenseItems > div:not(first-child){
+.incomeItems > div:not(:first-child),
+.expenseItems > div:not(first-child) {
   border-bottom: 1px solid var(--border-color-light);
+}
+.darkModeToggler {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  cursor: pointer;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+.darkModeToggler:hover {
+  background-color: #183153;
+}
+.darkModeToggler:hover .darkModeButton {
+  color: white;
+}
+.darkMode {
+  background-color: #183153;
+}
+
+.darkMode .incomeItems > div:nth-child(even),
+.darkMode .expenseItems > div:nth-child(even) {
+  background-color: #091d38;
+}
+
+.darkMode .transactionInput {
+  background-color: #091d38;
+}
+
+.darkMode .darkModeButton {
+  color: white;
+}
+.darkMode .darkModeToggler:hover .darkModeButton {
+  color: black;
+}
+.darkMode .darkModeToggler:hover {
+  background-color: white;
+}
+.darkMode .darkModeToggler {
+  background-color: #183153;
+}
+@media (max-width: 850px) {
+  #breakdown {
+    margin-inline: 2em;
+  }
+}
+@media (max-width: 650px) {
+  .transactionInput {
+    gap: 20px;
+    max-width: 650px;
+    height: auto;
+  }
+  .inputWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .inputField {
+    width: 150px !important;
+  }
+  .checkmark {
+    font-size: 40px;
+  }
+  select {
+    padding-block: 0.8em;
+  }
+}
+@media (max-width: 500px) {
+  #breakdown {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .incomeWrapper,
+  .expenseWrapper {
+    max-width: 300px;
+    width: 250px;
+    margin-inline: auto;
+    padding-block: 0.9em;
+  }
+  .transactionWrapper {
+    width: 300px;
+  }
+  .transactionWrapper h3 {
+    text-align: center;
+  }
+  .expenseItems {
+    margin-bottom: 1em;
+  }
+}
+@media (max-width: 380px) {
+  #totalBudget {
+    font-size: 40px;
+  }
+  #headWithDate {
+    font-size: 16px;
+  }
+  .headerBudgetDiv {
+    width: 250px;
+  }
+  .darkModeToggler {
+    width: 25px;
+    top: 7px;
+    left: 7px;
+    display: flex;
+    justify-content: center;
+    padding-block: 7px;
+    padding-inline: 15px;
+  }
+}
+
+.timeStamp {
+  display: none;
 }

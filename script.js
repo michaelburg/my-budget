@@ -7,13 +7,21 @@ let borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
+let docBody = document.querySelector("body");
+let isDarkMode = JSON.parse(localStorage.getItem("darkModeActive")) || false;
+if (isDarkMode) {
+  colorBody();
+}
+let borderSize = toggleBorderSize();
 let transactions =
-  JSON.parse(window.localStorage.getItem("transactions")) || {};
-
+  JSON.parse(window.localStorage.getItem("transactions")) || [];
+changeDarkModeButtons();
 addEventListenerToTextInput();
 addEventListenerToValueInput();
+addEventListenerToAction();
 handleSelectChange();
 loadPage();
+updateDarkModeIcon();
 
 function loadPage() {
   let action;
@@ -21,42 +29,52 @@ function loadPage() {
     "headWithDate"
   ).innerText = `Available budget in ${getDateToTitle()}:`;
   for (const key in transactions) {
-    transactions[key] < 0 ? (action = "expense") : (action = "income");
-    commitAction(action, key, transactions[key]);
+    commitAction(key, transactions[key]);
   }
 }
 
 function submitAction() {
-  let action = actionElement.value;
-  let description = descriptionElement.value;
-  let actionValue = valueElement.valueAsNumber;
-  if (validateInput(description, actionValue)) return;
-  if (action === "expense") actionValue *= -1;
-  commitAction(action, description, actionValue);
-  descriptionElement.value = "";
-  valueElement.value = "";
+  let actionDescription = actionDescriptionText.value;
+  let actionValue = actionValueText.valueAsNumber;
+  if (validateInput(actionDescription, actionValue)) return;
+  if (action === "reduce") actionValue *= -1;
+  commitAction(actionDescription, actionValue);
+  actionDescriptionText.value = "";
+  actionValueText.valueAsNumber = NaN;
 }
 
-function commitAction(action, description, actionValue) {
-  actionValue < 0
-    ? (totalExpense += actionValue)
-    : (totalIncome += actionValue);
-  totalBudget += actionValue;
-  transactions[description] = actionValue;
-  createNewAction(action, description, actionValue);
+function validateInput(actionDescription, actionValue) {
+  return (
+    actionDescription === "" ||
+    actionValue <= 0 ||
+    isNaN(actionValue) ||
+    transactions.hasOwnProperty(actionDescription)
+  );
+}
+function commitAction(description, transactionValue) {
+  let typeOfTransaction;
+  transactionValue < 0
+    ? (typeOfTransaction = "expense")
+    : (typeOfTransaction = "income");
+  transactionValue < 0
+    ? (totalExpense += transactionValue)
+    : (totalIncome += transactionValue);
+  totalBudget += transactionValue;
+  transactions[description] = transactionValue;
+  createNewAction(typeOfTransaction, description, transactionValue);
   setHead();
   setExpensesPer();
   updateLocalStorage();
 }
-function createNewAction(action, description, actionValue) {
-  let parent = document.querySelector(`.${action}Items`);
+function createNewAction(typeOfTransaction, description, transactionValue) {
+  let parent = document.querySelector(`.${typeOfTransaction}Items`);
   let newAction = document.createElement("div");
-  newAction.className = action + "Wrapper";
+  newAction.className = typeOfTransaction + "Wrapper";
   newAction.innerHTML = `
-  <p class=actionDescription>${description}</p>
+  <p class="description">${description}</p>
   <div class = "transaction">
-  <p class="transactionAmount">${numberToPrint(actionValue)}</p>
-  ${action === "expense" ? `<p id="percent"></p>` : ""}
+  <p class="transactionAmount">${numberToPrint(transactionValue)}</p>
+  ${typeOfTransaction === "expense" ? `<p id="percent"></p>` : ""}
   <i class="fa-regular fa-circle-xmark xMark transactionCancel" id="cancelExpense" onclick="cancel(this)"></i>
   </div>
   `;
@@ -77,26 +95,31 @@ function setHead() {
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
-    let expenseDesc = div.querySelector(".actionDescription").innerText;
+    let expenseDesc = div.querySelector(".description").innerText;
     let expensePer = div.querySelector("#percent");
     let percent =
-      parseInt((transactions[expenseDesc] * 100) / totalIncome) * -1 || 0;
+      parseInt((foundTransaction["value"] * 100) / totalIncome) * -1 || 0;
     expensePer.innerText = `${percent}%`;
   });
 }
 
-function cancel(btn) {
+function cancel(btn, timeStamp) {
+  const foundTransaction = transactions.find(
+    (transaction) => transaction.timeStamp === timeStamp
+  );
   let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  let cancelDescription = div.querySelector(".actionDescription").innerText;
-  if (div === btn.closest(".incomeWrapper"))
+  let cancelAmount;
+  let cancelDescription = div.querySelector(".description").innerText;
+  if (div === btn.closest(".incomeWrapper")) {
     totalIncome -= transactions[cancelDescription];
-  else if (div === btn.closest(".expenseWrapper"))
+  } else if (div === btn.closest(".expenseWrapper")) {
     totalExpense -= transactions[cancelDescription];
+  }
   totalBudget -= transactions[cancelDescription];
-  delete transactions[cancelDescription];
   setHead();
   setExpensesPer();
   updateLocalStorage();
+
   div.remove();
 }
 
@@ -128,8 +151,8 @@ function numberToPrint(number) {
   return `${sign} ${fixNum}`;
 }
 function changeBorderColor() {
-  const action = actionElement.value;
-  if (action == "expense") return redColor;
+  action = document.getElementById("action").value;
+  if (action == "reduce") return redColor;
   return greenColor;
 }
 function handleSelectChange() {
@@ -137,24 +160,70 @@ function handleSelectChange() {
 }
 
 function addEventListenerToTextInput() {
-  descriptionElement.addEventListener("focus", function () {
-    descriptionElement.style.border = "2px solid " + changeBorderColor();
+  actionDescriptionText.addEventListener("focus", function () {
+    actionDescriptionText.style.border = "2px solid " + changeBorderColor();
   });
-  descriptionElement.addEventListener("blur", function () {
-    descriptionElement.style.border = "1px solid " + borderColor;
+  actionDescriptionText.addEventListener("blur", function () {
+    actionDescriptionText.style.border = "1px solid " + borderColor;
   });
 }
 
 function addEventListenerToValueInput() {
-  valueElement.addEventListener("focus", function () {
-    valueElement.style.border = "2px solid " + changeBorderColor();
+  actionValueText.addEventListener("focus", function () {
+    actionValueText.style.border = "2px solid " + changeBorderColor();
   });
 
-  valueElement.addEventListener("blur", function () {
-    valueElement.style.border = "1px solid " + borderColor;
+  actionValueText.addEventListener("blur", function () {
+    actionValueText.style.border = "1px solid " + borderColor;
   });
 }
 
 document.addEventListener("keyup", function (event) {
   if (event.key === "Enter") submitAction();
 });
+
+function toggleDarkMode() {
+  isDarkMode = isDarkMode === false ? true : false;
+  updateDarkModeIcon();
+  colorBody();
+  changeDarkModeButtons();
+  handleSelectChange();
+  borderSize = toggleBorderSize();
+  localStorage.setItem("darkModeActive", isDarkMode);
+  location.reload();
+}
+function colorBody() {
+  if (isDarkMode) {
+    docBody.classList.add("darkMode");
+  } else {
+    docBody.classList.remove("darkMode");
+  }
+}
+
+function updateDarkModeIcon() {
+  const darkModeToggler = document.querySelector(".darkModeToggler");
+  darkModeToggler.innerHTML = isDarkMode
+    ? '<i class="fas fa-sun darkModeButton"></i>'
+    : '<i class="fas fa-moon darkModeButton"></i>';
+}
+
+function changeDarkModeButtons() {
+  let checkDiv = document.querySelector(".checkmarkSwitch");
+  if (isDarkMode) {
+    checkDiv.innerHTML = `<i
+    class="fas fa-circle-check checkmark"
+    id="submitAction"
+    onclick="submitAction()"
+  ></i>`;
+  } else {
+    checkDiv.innerHTML = `<i
+    class="far fa-check-circle checkmark"
+    id="submitAction"
+    onclick="submitAction()"
+  ></i>`;
+  }
+}
+
+function toggleBorderSize() {
+  return isDarkMode ? "3px" : "2px";
+}
