@@ -79,6 +79,7 @@ body {
   padding-block: 0.75em;
   border-bottom: 1px solid var(--border-color-light);
   gap: 10px;
+  height: 75px;
 }
 .inputWrapper {
   display: flex;
@@ -104,6 +105,9 @@ select {
   background-repeat: no-repeat;
   background-position: right center;
   padding-right: 1em;
+}
+select:focus {
+  outline: none;
 }
 #actionValue {
   width: 100px;
@@ -134,10 +138,16 @@ select {
 #expenses {
   color: var(--accent-color-red);
 }
+.actionName {
+  max-width: 75px;
+}
+.actionName {
+  max-width: 75px;
+}
 #description {
   color: black;
 }
-#percent {
+.percent {
   background-color: rgb(250, 205, 205);
   font-weight: 400;
   min-width: 35px;
@@ -201,7 +211,7 @@ select {
   opacity: 1;
 }
 .expenseWrapper:hover .transactionAmount,
-.expenseWrapper:hover #percent,
+.expenseWrapper:hover .percent,
 .incomeWrapper:hover .transactionAmount {
   transform: translateX(-10px);
 }
@@ -219,6 +229,46 @@ select {
 .expenseItems > div:not(first-child) {
   border-bottom: 1px solid var(--border-color-light);
 }
+.darkModeToggler {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  cursor: pointer;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+.darkModeToggler:hover {
+  background-color: #183153;
+}
+.darkModeToggler:hover .darkModeButton {
+  color: white;
+}
+.darkMode {
+  background-color: #183153;
+}
+
+.darkMode .incomeItems > div:nth-child(even),
+.darkMode .expenseItems > div:nth-child(even) {
+  background-color: #091d38;
+}
+
+.darkMode .transactionInput {
+  background-color: #091d38;
+}
+
+.darkMode .darkModeButton {
+  color: white;
+}
+.darkMode .darkModeToggler:hover .darkModeButton {
+  color: black;
+}
+.darkMode .darkModeToggler:hover {
+  background-color: white;
+}
+.darkMode .darkModeToggler {
+  background-color: #183153;
+}
 @media (max-width: 850px) {
   #breakdown {
     margin-inline: 2em;
@@ -228,6 +278,7 @@ select {
   .transactionInput {
     gap: 20px;
     max-width: 650px;
+    height: auto;
   }
   .inputWrapper {
     display: flex;
@@ -246,7 +297,7 @@ select {
     padding-block: 0.8em;
   }
 }
-@media (max-width: 470px) {
+@media (max-width: 500px) {
   #breakdown {
     flex-direction: column;
     align-items: center;
@@ -279,7 +330,17 @@ select {
   .headerBudgetDiv {
     width: 250px;
   }
+  .darkModeToggler {
+    width: 25px;
+    top: 7px;
+    left: 7px;
+    display: flex;
+    justify-content: center;
+    padding-block: 7px;
+    padding-inline: 15px;
+  }
 }
+
 .timeStamp {
   display: none;
 }

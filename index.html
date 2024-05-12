@@ -7,11 +7,13 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-    <title>Document</title>
+    <link rel="shortcut icon" href="favicons\favicon.ico" type="image/x-icon">
+    <title>My Budget</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="header">
+      <button class="darkModeToggler" onclick="toggleDarkMode()"></button>
       <h2 id="headWithDate"></h2>
       <h1 id="totalBudget">- 0.00</h1>
       <div id="totalIncomeDiv" class="headerBudgetDiv">
@@ -51,11 +53,9 @@
           class="inputField"
         />
       </div>
-      <i
-        class="far fa-check-circle checkmark"
-        id="submitAction"
-        onclick="submitAction()"
-      ></i>
+      <div class="checkmarkSwitch">
+        
+      </div>
     </div>
     <div id="breakdown">
       <div id="incomes" class="transactionWrapper">
