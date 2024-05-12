@@ -159,7 +159,7 @@ function addEventListenerToValueInput() {
 
 function addEventListenerToAction(){
   actionElement.addEventListener('click', function(){
-    actionElement.style.border = '2px solid rgb(56, 178, 173)'
+    actionElement.style.border = '2px solid ' + changeBorderColor();
   });
   actionElement.addEventListener("blur", function () {
     actionElement.style.border = "1px solid " + borderColor;
