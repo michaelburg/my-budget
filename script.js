@@ -1,5 +1,4 @@
 let actionElement = document.getElementById("action");
-
 let descriptionElement = document.getElementById("actionDescription");
 let valueElement = document.getElementById("actionValue");
 let redColor = "#F53237";
