@@ -7,6 +7,8 @@ let borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
+let currentBudget = 0;
+let isPageLoad = true
 let docBody = document.querySelector("body");
 let isDarkMode = JSON.parse(localStorage.getItem("darkModeActive")) || false;
 if (isDarkMode) {
@@ -28,6 +30,7 @@ function loadPage() {
   document.getElementById(
     "headWithDate"
   ).innerText = `Available budget in ${getDateToTitle()}:`;
+  currentBudget = totalBudget;
   transactions.forEach((transaction) => {
     transaction["value"] < 0 ? (action = "expense") : (action = "income");
     commitAction(
@@ -37,13 +40,20 @@ function loadPage() {
       transaction["timeStamp"]
     );
   });
+  isPageLoad = false
 }
+
+
 
 function submitAction() {
   let action = actionElement.value;
   let description = descriptionElement.value;
   let actionValue = valueElement.valueAsNumber;
-  if (validateInput(description, actionValue)) return;
+  if (validateInput(description, actionValue)){
+    let snackbarMessage = document.getElementById('snackbar')
+    snackbarMessage.className = 'show'
+    setTimeout(function(){ snackbarMessage.className = snackbarMessage.className.replace("show", ""); }, 2400);
+    return;}
   if (action === "expense") actionValue *= -1;
   time = new Date().getTime();
   transactions.push({
@@ -51,6 +61,7 @@ function submitAction() {
     value: actionValue,
     timeStamp: time,
   });
+  currentBudget = totalBudget
   commitAction(action, description, actionValue, time);
   descriptionElement.value = "";
   valueElement.value = "";
@@ -60,7 +71,10 @@ function commitAction(action, description, actionValue, time) {
   actionValue < 0
     ? (totalExpense += actionValue)
     : (totalIncome += actionValue);
+  currentBudget = totalBudget;
+  console.log(`current budget is ${currentBudget}`);
   totalBudget += actionValue;
+  console.log(`total budget is ${totalBudget}`);
   createNewAction(action, description, actionValue, time);
   setHead();
   setExpensesPer();
@@ -88,14 +102,47 @@ function createNewAction(action, description, actionValue, time) {
 }
 
 function setHead() {
-  let budget = document.getElementById("totalBudget");
-  budget.innerText = numberToPrint(totalBudget);
+  animateBudgetChange();
   document.getElementById("totalIncome").innerText = numberToPrint(totalIncome);
   document.getElementById("totalExpenses").innerText =
     numberToPrint(totalExpense);
   document.getElementById("totalPercent").innerText = `${
     parseInt((totalExpense * 100) / totalIncome) * -1 || 0
   }%`;
+}
+
+function animateBudgetChange() {
+  if (isPageLoad) {
+    updateBudgetDisplay(totalBudget);
+    return;
+  }
+  let from = currentBudget;
+  let to = totalBudget;
+  let step = to > from ? 423 : -423;
+  let interval = 10;
+  if (from === to) {
+    updateBudgetDisplay(from);
+    return;
+  }
+  let counter = setInterval(function() {
+    // If the budget has reached its final value, clear the interval and exit the function
+    if (from === to) {
+      clearInterval(counter);
+      return;
+    }
+    from += step;
+    // If the current budget has reached or passed the total budget, set it to the total budget
+    if ((step > 0 && from >= to) || (step < 0 && from <= to)) {
+      from = to;
+    }
+    updateBudgetDisplay(from);
+  }, interval);
+}
+
+
+function updateBudgetDisplay(budget) {
+  let budgetElement = document.getElementById("totalBudget");
+  budgetElement.innerText = numberToPrint(budget);
 }
 
 function setExpensesPer() {
@@ -121,7 +168,9 @@ function cancel(btn, timeStamp) {
     totalIncome -= foundTransaction["value"];
   else if (div === btn.closest(".expenseWrapper"))
     totalExpense -= foundTransaction["value"];
-  totalBudget -= foundTransaction["value"];
+   currentBudget = totalBudget;
+  
+   totalBudget -= foundTransaction["value"];
   transactions = transactions.filter(
     (transaction) => transaction.timeStamp !== timeStamp
   );
