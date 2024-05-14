@@ -128,10 +128,10 @@ function animateBudgetChange() {
     return;
   }
   let from = currentBudget;
-  let to = totalBudget;
-  let numOfTimes = 50;
-  let amountToChange = (to - from) / numOfTimes;
-  let interval = 20;
+  const to = totalBudget;
+  const numOfTimes = 50;
+  const amountToChange = (to - from) / numOfTimes;
+  const interval = 20;
   if (from === to) {
     updateBudgetDisplay(from);
     return;
