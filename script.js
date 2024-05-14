@@ -50,9 +50,7 @@ function submitAction() {
   let description = descriptionElement.value;
   let actionValue = valueElement.valueAsNumber;
   if (validateInput(description, actionValue)){
-    let snackbarMessage = document.getElementById('snackbar')
-    snackbarMessage.className = 'show'
-    setTimeout(function(){ snackbarMessage.className = snackbarMessage.className.replace("show", ""); }, 2400);
+    showSnackbar();
     return;}
   if (action === "expense") actionValue *= -1;
   time = new Date().getTime();
@@ -67,14 +65,27 @@ function submitAction() {
   valueElement.value = "";
 }
 
+let snackbarTimeout;
+
+function showSnackbar() {
+    let snackbarMessage = document.getElementById('snackbar');
+    snackbarMessage.classList.remove('show');
+    void snackbarMessage.offsetWidth; 
+    snackbarMessage.classList.add('show');
+    if (snackbarTimeout) {
+        clearTimeout(snackbarTimeout);
+    }
+    snackbarTimeout = setTimeout(function() {
+        snackbarMessage.classList.remove("show");
+    }, 2400);
+}
+
 function commitAction(action, description, actionValue, time) {
   actionValue < 0
     ? (totalExpense += actionValue)
     : (totalIncome += actionValue);
   currentBudget = totalBudget;
-  console.log(`current budget is ${currentBudget}`);
   totalBudget += actionValue;
-  console.log(`total budget is ${totalBudget}`);
   createNewAction(action, description, actionValue, time);
   setHead();
   setExpensesPer();
@@ -118,8 +129,9 @@ function animateBudgetChange() {
   }
   let from = currentBudget;
   let to = totalBudget;
-  let step = to > from ? 423 : -423;
-  let interval = 10;
+  let numOfTimes = 50;
+  let amountToChange = (to - from) / numOfTimes;
+  let interval = 20;
   if (from === to) {
     updateBudgetDisplay(from);
     return;
@@ -130,9 +142,9 @@ function animateBudgetChange() {
       clearInterval(counter);
       return;
     }
-    from += step;
+    from += amountToChange;
     // If the current budget has reached or passed the total budget, set it to the total budget
-    if ((step > 0 && from >= to) || (step < 0 && from <= to)) {
+    if ((amountToChange > 0 && from >= to) || (amountToChange < 0 && from <= to)) {
       from = to;
     }
     updateBudgetDisplay(from);
