@@ -172,6 +172,7 @@ select:focus {
 #expenses {
   color: var(--accent-color-red);
 }
+
 .actionName {
   max-width: 75px;
 }
@@ -231,6 +232,7 @@ select:focus {
   display: none;
 }
 .transactionAmount {
+  max-width: 170px;
   transition: all 0.3s;
   display: inline-block;
   font-weight: 400;
