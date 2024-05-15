@@ -114,8 +114,10 @@ function createNewAction(action, description, actionValue, time) {
 function setHead() {
   animateBudgetChange();
   document.getElementById("totalIncome").innerText = numberToPrint(totalIncome);
-  document.getElementById("totalExpenses").innerText =
-    numberToPrint(totalExpense);
+  document.getElementById("totalExpenses").innerText = numberToPrint(
+    totalExpense,
+    true
+  );
   document.getElementById("totalPercent").innerText = `${
     parseInt((totalExpense * 100) / totalIncome) * -1 || 0
   }%`;
@@ -211,9 +213,9 @@ function validateInput(description, actionValue) {
     transactions.hasOwnProperty(description)
   );
 }
-function numberToPrint(number) {
+function numberToPrint(number, isExpenseHead = false) {
   let sign = "+";
-  if (number < 0) {
+  if (number < 0 || isExpenseHead) {
     sign = "-";
     number = number * -1;
   }
