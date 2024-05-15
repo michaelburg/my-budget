@@ -1,15 +1,15 @@
 let actionElement = document.getElementById("action");
 let descriptionElement = document.getElementById("actionDescription");
 let valueElement = document.getElementById("actionValue");
-let redColor = "#F53237";
-let greenColor = "rgb(56, 178, 173)";
-let borderColor = "rgb(202, 202, 202)";
+const redColor = "#F53237";
+const greenColor = "rgb(56, 178, 173)";
+const borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
 let currentBudget = 0;
 let isPageLoad = true;
-let docBody = document.querySelector("body");
+const docBody = document.querySelector("body");
 let isDarkMode = JSON.parse(localStorage.getItem("darkModeActive")) || false;
 if (isDarkMode) {
   colorBody();
@@ -133,10 +133,6 @@ function animateBudgetChange() {
   const numOfTimes = 47;
   const amountToChange = (to - from) / numOfTimes;
   const interval = 20;
-  if (from === to) {
-    updateBudgetDisplay(from);
-    return;
-  }
   let counter = setInterval(function () {
     // If the budget has reached its final value, clear the interval and exit the function
     if (from === to) {
@@ -174,14 +170,16 @@ function setExpensesPer() {
   });
 }
 
-function cancel(btn, timeStamp) {
+function cancel(cancelButton, timeStamp) {
   const foundTransaction = transactions.find(
     (transaction) => transaction.timeStamp === timeStamp
   );
-  let div = btn.closest(".incomeWrapper") || btn.closest(".expenseWrapper");
-  if (div === btn.closest(".incomeWrapper"))
+  let actionDiv =
+    cancelButton.closest(".incomeWrapper") ||
+    cancelButton.closest(".expenseWrapper");
+  if (actionDiv === cancelButton.closest(".incomeWrapper"))
     totalIncome -= foundTransaction["value"];
-  else if (div === btn.closest(".expenseWrapper"))
+  else if (actionDiv === cancelButton.closest(".expenseWrapper"))
     totalExpense -= foundTransaction["value"];
   currentBudget = totalBudget;
 
@@ -189,7 +187,7 @@ function cancel(btn, timeStamp) {
   transactions = transactions.filter(
     (transaction) => transaction.timeStamp !== timeStamp
   );
-  div.remove();
+  actionDiv.remove();
   setHead();
   setExpensesPer();
   updateLocalStorage();
