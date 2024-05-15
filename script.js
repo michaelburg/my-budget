@@ -210,9 +210,12 @@ function numberToPrint(number, isExpenseHead = false) {
   let sign = "+";
   if (number < 0 || isExpenseHead) {
     sign = "-";
-    number = number * -1;
+    number = Math.abs(number);
   }
-  const fixNum = number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const fixNum = number.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
   return `${sign} ${fixNum}`;
 }
 function changeBorderColor() {
