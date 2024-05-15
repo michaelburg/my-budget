@@ -8,7 +8,7 @@ let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
 let currentBudget = 0;
-let isPageLoad = true
+let isPageLoad = true;
 let docBody = document.querySelector("body");
 let isDarkMode = JSON.parse(localStorage.getItem("darkModeActive")) || false;
 if (isDarkMode) {
@@ -40,18 +40,17 @@ function loadPage() {
       transaction["timeStamp"]
     );
   });
-  isPageLoad = false
+  isPageLoad = false;
 }
-
-
 
 function submitAction() {
   let action = actionElement.value;
   let description = descriptionElement.value;
   let actionValue = valueElement.valueAsNumber;
-  if (validateInput(description, actionValue)){
+  if (validateInput(description, actionValue)) {
     showSnackbar();
-    return;}
+    return;
+  }
   if (action === "expense") actionValue *= -1;
   time = new Date().getTime();
   transactions.push({
@@ -59,7 +58,7 @@ function submitAction() {
     value: actionValue,
     timeStamp: time,
   });
-  currentBudget = totalBudget
+  currentBudget = totalBudget;
   commitAction(action, description, actionValue, time);
   descriptionElement.value = "";
   valueElement.value = "";
@@ -68,16 +67,16 @@ function submitAction() {
 let snackbarTimeout;
 
 function showSnackbar() {
-    let snackbarMessage = document.getElementById('snackbar');
-    snackbarMessage.classList.remove('show');
-    void snackbarMessage.offsetWidth; 
-    snackbarMessage.classList.add('show');
-    if (snackbarTimeout) {
-        clearTimeout(snackbarTimeout);
-    }
-    snackbarTimeout = setTimeout(function() {
-        snackbarMessage.classList.remove("show");
-    }, 2400);
+  let snackbarMessage = document.getElementById("snackbar");
+  snackbarMessage.classList.remove("show");
+  void snackbarMessage.offsetWidth;
+  snackbarMessage.classList.add("show");
+  if (snackbarTimeout) {
+    clearTimeout(snackbarTimeout);
+  }
+  snackbarTimeout = setTimeout(function () {
+    snackbarMessage.classList.remove("show");
+  }, 2400);
 }
 
 function commitAction(action, description, actionValue, time) {
@@ -129,14 +128,14 @@ function animateBudgetChange() {
   }
   let from = currentBudget;
   const to = totalBudget;
-  const numOfTimes = 50;
+  const numOfTimes = 47;
   const amountToChange = (to - from) / numOfTimes;
   const interval = 20;
   if (from === to) {
     updateBudgetDisplay(from);
     return;
   }
-  let counter = setInterval(function() {
+  let counter = setInterval(function () {
     // If the budget has reached its final value, clear the interval and exit the function
     if (from === to) {
       clearInterval(counter);
@@ -144,13 +143,15 @@ function animateBudgetChange() {
     }
     from += amountToChange;
     // If the current budget has reached or passed the total budget, set it to the total budget
-    if ((amountToChange > 0 && from >= to) || (amountToChange < 0 && from <= to)) {
+    if (
+      (amountToChange > 0 && from >= to) ||
+      (amountToChange < 0 && from <= to)
+    ) {
       from = to;
     }
     updateBudgetDisplay(from);
   }, interval);
 }
-
 
 function updateBudgetDisplay(budget) {
   let budgetElement = document.getElementById("totalBudget");
@@ -180,9 +181,9 @@ function cancel(btn, timeStamp) {
     totalIncome -= foundTransaction["value"];
   else if (div === btn.closest(".expenseWrapper"))
     totalExpense -= foundTransaction["value"];
-   currentBudget = totalBudget;
-  
-   totalBudget -= foundTransaction["value"];
+  currentBudget = totalBudget;
+
+  totalBudget -= foundTransaction["value"];
   transactions = transactions.filter(
     (transaction) => transaction.timeStamp !== timeStamp
   );
