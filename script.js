@@ -8,16 +8,13 @@ let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
 let currentBudget = 0;
+let snackbarTimeout;
 let isPageLoad = true;
 const docBody = document.querySelector("body");
-let isDarkMode = JSON.parse(localStorage.getItem("darkModeActive")) || false;
 if (isDarkMode) {
   colorBody();
 }
 let borderSize = toggleBorderSize();
-let transactions =
-  JSON.parse(window.localStorage.getItem("transactions")) || [];
-
 changeDarkModeButtons();
 addEventListenerToTextInput();
 addEventListenerToValueInput();
@@ -44,8 +41,6 @@ function loadPage() {
   isPageLoad = false
 }
 
-
-
 function submitAction() {
   let action = actionElement.value;
   let description = descriptionElement.value;
@@ -64,24 +59,7 @@ function submitAction() {
   commitAction(action, description, actionValue, time);
   descriptionElement.value = "";
   valueElement.value = "";
-  console.log(transactions);
 }
-
-let snackbarTimeout;
-
-function showSnackbar() {
-    let snackbarMessage = document.getElementById('snackbar');
-    snackbarMessage.classList.remove('show');
-    void snackbarMessage.offsetWidth; 
-    snackbarMessage.classList.add('show');
-    if (snackbarTimeout) {
-        clearTimeout(snackbarTimeout);
-    }
-    snackbarTimeout = setTimeout(function() {
-        snackbarMessage.classList.remove("show");
-    }, 2400);
-}
-
 function commitAction(action, description, actionValue, time) {
   actionValue < 0
     ? (totalExpense += actionValue)
@@ -125,37 +103,6 @@ function setHead() {
   }%`;
 }
 
-function animateBudgetChange() {
-  if (isPageLoad) {
-    updateBudgetDisplay(totalBudget);
-    return;
-  }
-  let from = currentBudget;
-  const to = totalBudget;
-  const numOfTimes = 47;
-  const amountToChange = (to - from) / numOfTimes;
-  const interval = 20;
-  let counter = setInterval(function() {
-    // If the budget has reached its final value, clear the interval and exit the function
-    if (from === to) {
-      clearInterval(counter);
-      return;
-    }
-    from += amountToChange;
-    // If the current budget has reached or passed the total budget, set it to the total budget
-    if ((amountToChange > 0 && from >= to) || (amountToChange < 0 && from <= to)) {
-      from = to;
-    }
-    updateBudgetDisplay(from);
-  }, interval);
-}
-
-
-function updateBudgetDisplay(budget) {
-  let budgetElement = document.getElementById("totalBudget");
-  budgetElement.innerText = numberToPrint(budget);
-}
-
 function setExpensesPer() {
   let expenseDiv = document.querySelectorAll(".expenseWrapper");
   expenseDiv.forEach((div) => {
@@ -191,11 +138,6 @@ function cancel(cancelButton, timeStamp) {
   setExpensesPer();
   updateLocalStorage();
 }
-
-function updateLocalStorage() {
-  localStorage.setItem("transactions", JSON.stringify(transactions));
-}
-
 function getDateToTitle() {
   const date = new Date();
   const month = date.toLocaleString("en-US", { month: "long" });
@@ -222,89 +164,11 @@ function numberToPrint(number, isExpenseHead = false) {
 });
   return `${sign} ${fixNum}`;
 }
-function changeBorderColor() {
-  const action = document.getElementById("action").value;
-  if (action == "expense") return redColor;
-  return greenColor;
-}
+
 function handleSelectChange() {
   document.getElementById("submitAction").style.color = changeBorderColor();
-}
-
-function addEventListenerToTextInput() {
-  descriptionElement.addEventListener("focus", function () {
-    descriptionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
-  });
-  descriptionElement.addEventListener("blur", function () {
-    descriptionElement.style.border = `1px solid ${borderColor}`;
-  });
-}
-
-function addEventListenerToValueInput() {
-  valueElement.addEventListener("focus", function () {
-    valueElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
-  });
-
-  valueElement.addEventListener("blur", function () {
-    valueElement.style.border = `1px solid ${borderColor}`;
-  });
-}
-
-function addEventListenerToAction() {
-  actionElement.addEventListener("click", function () {
-    actionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
-  });
-  actionElement.addEventListener("blur", function () {
-    actionElement.style.border = "1px solid " + borderColor;
-  });
 }
 
 document.addEventListener("keyup", function (event) {
   if (event.key === "Enter") submitAction();
 });
-
-function toggleDarkMode() {
-  isDarkMode = isDarkMode === false ? true : false;
-  updateDarkModeIcon();
-  colorBody();
-  changeDarkModeButtons();
-  handleSelectChange();
-  borderSize = toggleBorderSize();
-  localStorage.setItem("darkModeActive", isDarkMode);
-  location.reload();
-}
-function colorBody() {
-  if (isDarkMode) {
-    docBody.classList.add("darkMode");
-  } else {
-    docBody.classList.remove("darkMode");
-  }
-}
-
-function updateDarkModeIcon() {
-  const darkModeToggler = document.querySelector(".darkModeToggler");
-  darkModeToggler.innerHTML = isDarkMode
-    ? '<i class="fas fa-sun darkModeButton"></i>'
-    : '<i class="fas fa-moon darkModeButton"></i>';
-}
-
-function changeDarkModeButtons() {
-  let checkDiv = document.querySelector(".checkmarkSwitch");
-  if (isDarkMode) {
-    checkDiv.innerHTML = `<i
-    class="fas fa-circle-check checkmark"
-    id="submitAction"
-    onclick="submitAction()"
-  ></i>`;
-  } else {
-    checkDiv.innerHTML = `<i
-    class="far fa-check-circle checkmark"
-    id="submitAction"
-    onclick="submitAction()"
-  ></i>`;
-  }
-}
-
-function toggleBorderSize() {
-  return isDarkMode ? "3px" : "2px";
-}
