@@ -17,6 +17,7 @@ if (isDarkMode) {
 let borderSize = toggleBorderSize();
 let transactions =
   JSON.parse(window.localStorage.getItem("transactions")) || [];
+
 changeDarkModeButtons();
 addEventListenerToTextInput();
 addEventListenerToValueInput();
@@ -63,6 +64,7 @@ function submitAction() {
   commitAction(action, description, actionValue, time);
   descriptionElement.value = "";
   valueElement.value = "";
+  console.log(transactions);
 }
 
 let snackbarTimeout;
@@ -90,6 +92,7 @@ function commitAction(action, description, actionValue, time) {
   setHead();
   setExpensesPer();
   updateLocalStorage();
+  
 }
 function createNewAction(action, description, actionValue, time) {
   let cancelClass = isDarkMode
@@ -175,9 +178,10 @@ function cancel(cancelButton, timeStamp) {
   if (actionDiv === cancelButton.closest(".incomeWrapper"))
     totalIncome -= foundTransaction["value"];
   else if (actionDiv === cancelButton.closest(".expenseWrapper"))
-    totalExpense -= foundTransaction["value"];
+   totalExpense -= foundTransaction["value"];
+
+
    currentBudget = totalBudget;
-  
    totalBudget -= foundTransaction["value"];
   transactions = transactions.filter(
     (transaction) => transaction.timeStamp !== timeStamp
