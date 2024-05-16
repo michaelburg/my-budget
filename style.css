@@ -226,9 +226,7 @@ select:focus {
 
 .transactionCancel {
   font-size: 20px;
-  transition: all 0.3s ease;
   cursor: pointer;
-  opacity: 0;
   display: none;
 }
 .transactionAmount {
@@ -244,7 +242,6 @@ select:focus {
 .expenseWrapper:hover .transactionCancel,
 .incomeWrapper:hover .transactionCancel {
   display: inline-block;
-  opacity: 1;
 }
 .expenseWrapper:hover .transactionAmount,
 .expenseWrapper:hover .percent,
