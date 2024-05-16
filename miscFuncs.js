@@ -1,3 +1,7 @@
+const redColor = "#F53237";
+const greenColor = "rgb(56, 178, 173)";
+const borderColor = "rgb(202, 202, 202)";
+
 function addEventListenerToTextInput() {
   descriptionElement.addEventListener("focus", function () {
     descriptionElement.style.border = `${borderSize} solid ${changeBorderColor()}`;

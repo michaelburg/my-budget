@@ -1,9 +1,6 @@
 let actionElement = document.getElementById("action");
 let descriptionElement = document.getElementById("actionDescription");
 let valueElement = document.getElementById("actionValue");
-const redColor = "#F53237";
-const greenColor = "rgb(56, 178, 173)";
-const borderColor = "rgb(202, 202, 202)";
 let totalBudget = 0;
 let totalIncome = 0;
 let totalExpense = 0;
