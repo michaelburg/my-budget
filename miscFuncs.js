@@ -11,6 +11,20 @@ function addEventListenerToTextInput() {
   });
 }
 
+function showSnackbar() {
+  let snackbarMessage = document.getElementById('snackbar');
+  snackbarMessage.classList.remove('show');
+  void snackbarMessage.offsetWidth; 
+  snackbarMessage.classList.add('show');
+  if (snackbarTimeout) {
+      clearTimeout(snackbarTimeout);
+  }
+  snackbarTimeout = setTimeout(function() {
+      snackbarMessage.classList.remove("show");
+  }, 2400);
+}
+
+
 function addEventListenerToValueInput() {
   valueElement.addEventListener("focus", function () {
     valueElement.style.border = `${borderSize} solid ${changeBorderColor()}`;
